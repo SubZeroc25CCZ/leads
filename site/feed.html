@@ -52,7 +52,7 @@ if (!t || !/^[a-f0-9]{12}$/.test(t)) {
       '<div class="twrap"><table><thead><tr><th>Address</th><th>Owner</th><th>City</th><th>ZIP</th><th>Signals</th><th>Score</th><th>Harvested</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
       '<a class="btn" id="dl">Download CSV</a>' +
       '<a class="btn2" href="mailto:leadmachine@agentmail.to?subject=Full%20batch%20request%20(' + encodeURIComponent(d.prepared_for) + ')&body=Ready%20for%20the%20full%20batch.%20My%20target%20ZIPs%3A%20">Request the full county batch →</a>' +
-      '<div class="meta">Programmatic access: <code>GET ' + location.origin + "/feed/" + t + '.json</code> — refreshed with each batch. Keep this link private.</div>';
+      '<div class="meta">Programmatic access: <code>GET ' + location.origin + "/feed/" + t + '.json</code> — refreshed with each batch. Keep this link private. Use of this data is subject to the <a href="/terms.html" style="color:var(--acc)">Data License &amp; Terms</a>.</div>';
     const a = document.getElementById("dl");
     a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
     a.download = "leadmachine_" + d.county.toLowerCase().replace(/[^a-z]/g,"") + "_sample.csv";

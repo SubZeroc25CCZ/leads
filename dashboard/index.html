@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>LEADMACHINE</title>
+<style>
+:root{--bg:#0b0d10;--panel:#14181d;--line:#232a31;--txt:#e8ebee;--dim:#8a94a0;--acc:#d4af37;--ok:#3ecf8e;--bad:#e05252}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:18px;max-width:1100px;margin:0 auto}
+h1{font-size:20px;letter-spacing:4px;font-weight:600}
+h1 span{color:var(--acc)}
+h2{font-size:13px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:10px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin:14px 0}
+input,select,textarea,button{font:inherit;color:var(--txt);background:#0e1114;border:1px solid var(--line);border-radius:7px;padding:9px 11px}
+input:focus,textarea:focus{outline:none;border-color:var(--acc)}
+button{cursor:pointer;background:var(--acc);color:#0b0d10;font-weight:600;border:none}
+button.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1;min-width:120px}
+.row>button{flex:0 0 auto}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--dim);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.wrap{overflow-x:auto}
+.score{font-weight:700;color:var(--acc)}
+.stat{display:inline-block;margin-right:22px}
+.stat b{font-size:22px;color:var(--acc)}
+.stat i{display:block;font-style:normal;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.msg{font-size:13px;margin-top:8px;color:var(--dim)}
+.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+textarea{width:100%;min-height:110px;font-family:ui-monospace,monospace;font-size:12px}
+.tag{display:inline-block;background:#0e1114;border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:11px;margin:1px;color:var(--dim)}
+details summary{cursor:pointer;color:var(--dim);font-size:13px}
+small{color:var(--dim)}
+</style>
+</head>
+<body>
+<h1>LEAD<span>MACHINE</span></h1>
+
+<div class="panel">
+<h2>Access</h2>
+<div class="row"><input id="apikey" type="password" placeholder="API key" /><button onclick="saveKey()">Save</button><button class="ghost" onclick="loadLeads()">Refresh</button></div>
+<div class="msg" id="accessMsg"></div>
+</div>
+
+<div class="panel">
+<h2>Pipeline</h2>
+<div id="stats"><span class="stat"><b>&mdash;</b><i>Total</i></span></div>
+</div>
+
+<div class="panel">
+<h2>Automation</h2>
+<small>Daily cron pulls government open-data sources automatically (09:00 UTC). You can also trigger it manually.</small>
+<div class="row" style="margin-top:8px"><button onclick="runHarvest()">Run harvest now</button><button class="ghost" onclick="loadLog()">Show log</button></div>
+<div class="msg" id="autoMsg"></div>
+<div class="wrap"><table id="logTable"><thead><tr><th>Time (UTC)</th><th>Source</th><th>Fetched</th><th>New</th><th>Merged</th><th>OK</th><th>Note</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div class="panel">
+<h2>Ingest CSV (manual, optional)</h2>
+<small>Headers: owner_name, property_address, city, county, state, zip, phone, email, est_value, signals (separate multiple signals with | ) &mdash; valid signals: lis_pendens, pre_foreclosure, probate, inherited, tax_delinquent, divorce, code_violation, vacant, tired_landlord, absentee</small>
+<textarea id="csv" placeholder="owner_name,property_address,city,county,state,zip,phone,est_value,signals&#10;John Doe,123 Palm Ave,Fort Lauderdale,Broward,FL,33301,9545551234,340000,probate|absentee"></textarea>
+<div class="row" style="margin-top:8px"><input id="srcName" placeholder="Source label (e.g. broward_probate_aug26)" /><button onclick="ingest()">Ingest &amp; Score</button></div>
+<div class="msg" id="ingestMsg"></div>
+</div>
+
+<div class="panel">
+<h2>Leads</h2>
+<div class="row"><input id="fCounty" placeholder="County" /><input id="fScore" placeholder="Min score" type="number" /><select id="fStatus"><option value="">Any status</option><option value="new">New</option><option value="delivered">Delivered</option><option value="sold">Sold</option></select><button class="ghost" onclick="loadLeads()">Filter</button><button onclick="exportCsv()">Export CSV</button></div>
+<div class="wrap"><table id="leadsTable"><thead><tr><th>Ref</th><th>Score</th><th>Owner</th><th>Address</th><th>County</th><th>Zip</th><th>Value</th><th>Signals</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div class="panel">
+<h2>Buyers</h2>
+<div class="row"><input id="bName" placeholder="Name" /><input id="bCompany" placeholder="Company" /><input id="bEmail" placeholder="Email" /><select id="bVertical"><option value="cash_buyer">Cash buyer</option><option value="agent">Agent</option><option value="lender">Lender / Refi</option><option value="home_services">Home services</option><option value="legal">Legal</option></select><input id="bPrice" placeholder="$/lead" type="number" /><button onclick="addBuyer()">Add</button></div>
+<div class="msg" id="buyerMsg"></div>
+<div class="wrap"><table id="buyersTable"><thead><tr><th>ID</th><th>Name</th><th>Company</th><th>Email</th><th>Vertical</th><th>$/lead</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<script>
+const $=(id)=>document.getElementById(id);
+let KEY=localStorage.getItem("lm_key")||"";
+if(KEY)$("apikey").value=KEY;
+function saveKey(){KEY=$("apikey").value.trim();localStorage.setItem("lm_key",KEY);msg("accessMsg","Key saved",1);loadLeads();loadBuyers();}
+function msg(id,t,ok){const e=$(id);e.textContent=t;e.className="msg "+(ok?"ok":"bad");}
+async function api(path,opts={}){
+  opts.headers=Object.assign({"x-api-key":KEY,"Content-Type":"application/json"},opts.headers||{});
+  const r=await fetch(path,opts);
+  const ct=r.headers.get("content-type")||"";
+  if(ct.includes("text/csv"))return r;
+  const j=await r.json();
+  if(!r.ok)throw new Error(j.error||r.status);
+  return j;
+}
+function parseCSV(text){
+  const rows=[];let row=[],cur="",q=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(q){if(c=='"'){if(text[i+1]=='"'){cur+='"';i++;}else q=false;}else cur+=c;}
+    else{if(c=='"')q=true;else if(c==","){row.push(cur);cur="";}
+    else if(c=="\n"||c=="\r"){if(cur!==""||row.length){row.push(cur);rows.push(row);row=[];cur="";}if(c=="\r"&&text[i+1]=="\n")i++;}
+    else cur+=c;}}
+  if(cur!==""||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
+async function ingest(){
+  try{
+    const raw=$("csv").value.trim();if(!raw)return msg("ingestMsg","Paste CSV first",0);
+    const grid=parseCSV(raw);const head=grid[0].map(h=>h.trim().toLowerCase());
+    const rows=grid.slice(1).filter(r=>r.length>1).map(r=>{const o={};head.forEach((h,i)=>o[h]=(r[i]||"").trim());return o;});
+    let done=0,ins=0,mrg=0;
+    for(let i=0;i<rows.length;i+=50){
+      const j=await api("/api/ingest",{method:"POST",body:JSON.stringify({source:$("srcName").value||"manual",rows:rows.slice(i,i+50)})});
+      ins+=j.inserted;mrg+=j.merged;done+=Math.min(50,rows.length-i);
+      msg("ingestMsg","Processing "+done+"/"+rows.length+"...",1);
+    }
+    msg("ingestMsg","Done - "+ins+" new, "+mrg+" merged (signal-stacked)",1);
+    loadLeads();
+  }catch(e){msg("ingestMsg","Error: "+e.message,0);}
+}
+async function runHarvest(){
+  try{
+    msg("autoMsg","Harvesting... (up to 60s)",1);
+    const j=await api("/api/cron/harvest");
+    if(!j.report||!j.report.length){msg("autoMsg","No sources configured yet",0);return;}
+    msg("autoMsg","Done: "+j.report.map(r=>r.source+" "+(r.error?"ERR":"+"+(r.inserted||0)+"/~"+(r.merged||0))).join(" | "),1);
+    loadLeads();loadLog();
+  }catch(e){msg("autoMsg","Error: "+e.message,0);}
+}
+async function loadLog(){
+  try{
+    const j=await api("/api/cron/harvest?log=1");
+    const tb=$("logTable").querySelector("tbody");tb.innerHTML="";
+    for(const l of j.log){
+      const tr=document.createElement("tr");
+      tr.innerHTML="<td>"+String(l.ran_at||"").slice(0,16).replace("T"," ")+"</td><td>"+esc(l.source)+"</td><td>"+l.fetched+"</td><td>"+l.inserted+"</td><td>"+l.merged+"</td><td>"+(l.ok?"✓":"✗")+"</td><td>"+esc(String(l.note||"").slice(0,70))+"</td>";
+      tb.appendChild(tr);
+    }
+  }catch(e){msg("autoMsg","Log error: "+e.message,0);}
+}
+async function loadLeads(){
+  try{
+    const p=new URLSearchParams();
+    if($("fCounty").value)p.set("county",$("fCounty").value);
+    if($("fScore").value)p.set("min_score",$("fScore").value);
+    if($("fStatus").value)p.set("status",$("fStatus").value);
+    const j=await api("/api/leads?"+p);
+    $("stats").innerHTML='<span class="stat"><b>'+(j.stats.total||0)+'</b><i>Total</i></span><span class="stat"><b>'+(j.stats.available||0)+'</b><i>Available</i></span><span class="stat"><b>'+(j.stats.avg_score||0)+'</b><i>Avg score</i></span>';
+    const tb=$("leadsTable").querySelector("tbody");tb.innerHTML="";
+    for(const l of j.leads){
+      let sigs=[];try{sigs=JSON.parse(l.signals||"[]");}catch(e){}
+      const tr=document.createElement("tr");
+      tr.innerHTML="<td>"+l.lead_ref+"</td><td class='score'>"+l.score+"</td><td>"+esc(l.owner_name)+"</td><td>"+esc(l.property_address)+"</td><td>"+esc(l.county)+"</td><td>"+esc(l.zip)+"</td><td>"+(l.est_value?"$"+Number(l.est_value).toLocaleString():"-")+"</td><td>"+sigs.map(s=>"<span class='tag'>"+s+"</span>").join("")+"</td><td>"+l.status+"</td>";
+      tb.appendChild(tr);
+    }
+    msg("accessMsg","Connected",1);
+  }catch(e){msg("accessMsg","Error: "+e.message,0);}
+}
+async function loadBuyers(){
+  try{
+    const j=await api("/api/buyers");
+    const tb=$("buyersTable").querySelector("tbody");tb.innerHTML="";
+    for(const b of j.buyers){
+      const tr=document.createElement("tr");
+      tr.innerHTML="<td>"+b.id+"</td><td>"+esc(b.name)+"</td><td>"+esc(b.company)+"</td><td>"+esc(b.email)+"</td><td>"+esc(b.vertical)+"</td><td>"+(b.price_per_lead?"$"+b.price_per_lead:"-")+"</td><td>"+b.status+"</td>";
+      tb.appendChild(tr);
+    }
+  }catch(e){}
+}
+async function addBuyer(){
+  try{
+    await api("/api/buyers",{method:"POST",body:JSON.stringify({name:$("bName").value,company:$("bCompany").value,email:$("bEmail").value,vertical:$("bVertical").value,price_per_lead:$("bPrice").value})});
+    msg("buyerMsg","Buyer added",1);loadBuyers();
+  }catch(e){msg("buyerMsg","Error: "+e.message,0);}
+}
+async function exportCsv(){
+  try{
+    const p=new URLSearchParams();
+    if($("fCounty").value)p.set("county",$("fCounty").value);
+    if($("fScore").value)p.set("min_score",$("fScore").value);
+    if($("fStatus").value)p.set("status",$("fStatus").value);
+    const r=await api("/api/export?"+p);
+    const blob=await r.blob();const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download="leadmachine_export.csv";a.click();
+  }catch(e){msg("accessMsg","Export error: "+e.message,0);}
+}
+function esc(s){return String(s==null?"":s).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+if(KEY){loadLeads();loadBuyers();loadLog();}
+</script>
+</body>
+</html>

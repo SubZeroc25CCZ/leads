@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Order received — LeadMachine FL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:wght@0,400;0,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#E9E7DF;--paper-2:#F3F2EC;--ink:#15181D;--ink-60:rgba(21,24,29,.62);
+--ink-38:rgba(21,24,29,.38);--stamp:#A5291B;--verified:#4A6B43;--rule:rgba(21,24,29,.16);
+--rule-soft:rgba(21,24,29,.08);--mono:"IBM Plex Mono",ui-monospace,monospace;
+--body:"Public Sans",system-ui,sans-serif;--display:"Archivo",system-ui,sans-serif;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased;
+background-image:linear-gradient(to right,var(--rule-soft) 1px,transparent 1px),
+linear-gradient(to bottom,var(--rule-soft) 1px,transparent 1px);background-size:64px 64px;}
+.wrap{max-width:940px;margin:0 auto;padding:0 24px}
+.site{border-bottom:1px solid var(--rule);background:rgba(233,231,223,.93)}
+.site .wrap{display:flex;align-items:center;height:62px}
+.mark{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 118;
+font-size:1.02rem;letter-spacing:.02em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.mark span{color:var(--stamp)}
+.eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;
+text-transform:uppercase;color:var(--verified)}
+h1{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 112;
+font-size:clamp(2.1rem,5.5vw,3.4rem);text-transform:uppercase;line-height:1.02;
+letter-spacing:-.015em;margin:16px 0 18px}
+h2{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 108;
+font-size:1.15rem;text-transform:uppercase;letter-spacing:.01em;margin:0 0 16px}
+.lede{font-size:1.08rem;color:var(--ink-60);max-width:60ch;margin:0 0 34px}
+main{padding:clamp(48px,7vw,88px) 0 60px}
+.tick{width:44px;height:44px;border:2px solid var(--verified);display:flex;
+align-items:center;justify-content:center;color:var(--verified);font-size:20px;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);
+border:1px solid var(--rule);margin-bottom:44px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.cell{background:var(--paper-2);padding:24px}
+.cell dt{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+color:var(--stamp);margin-bottom:6px}
+.cell dd{margin:0;font-size:14.5px;color:var(--ink-60)}
+.panel{border:1px solid var(--ink);background:var(--paper-2);padding:clamp(24px,4vw,34px)}
+.field{margin-bottom:16px}
+.field label{display:block;font-family:var(--mono);font-size:10px;font-weight:600;
+letter-spacing:.14em;text-transform:uppercase;color:var(--ink-38);margin-bottom:7px}
+.field input{width:100%;background:transparent;border:1px solid var(--rule);color:var(--ink);
+font-family:var(--body);font-size:15px;padding:13px 14px;border-radius:0}
+.field input:focus{outline:2px solid var(--stamp);outline-offset:1px;border-color:transparent}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.row2{grid-template-columns:1fr}}
+.submit{width:100%;background:var(--ink);color:var(--paper-2);border:1px solid var(--ink);
+font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.1em;
+text-transform:uppercase;padding:16px;cursor:pointer;transition:background .16s}
+.submit:hover:not(:disabled){background:var(--stamp);border-color:var(--stamp)}
+.submit:disabled{opacity:.5;cursor:default}
+.msg{margin-top:14px;padding:13px 15px;font-size:14px;display:none}
+.msg.ok{display:block;background:rgba(74,107,67,.14);border-left:3px solid var(--verified)}
+.msg.err{display:block;background:rgba(165,41,27,.12);border-left:3px solid var(--stamp)}
+.back{display:inline-block;margin-top:38px;font-family:var(--mono);font-size:12px;
+letter-spacing:.08em;text-transform:uppercase;color:var(--ink-60)}
+footer{border-top:1px solid var(--rule);padding:28px 0 46px;font-family:var(--mono);
+font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-38)}
+footer a{color:var(--ink-60)}
+:focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header class="site"><div class="wrap">
+  <a href="/" class="mark">Lead<span>Machine</span> FL</a>
+</div></header>
+
+<main>
+  <div class="wrap">
+    <div class="tick" aria-hidden="true">✓</div>
+    <span class="eyebrow">Payment received</span>
+    <h1>Order confirmed.<br>One thing left.</h1>
+    <p class="lede">Stripe has your payment and a receipt is in your inbox. Tell us where you buy and we'll cut your batch to match — without it we'll send the highest-scoring rows across everything we harvest.</p>
+
+    <dl class="grid">
+      <div class="cell"><dt>Delivery</dt><dd>CSV emailed within 4 business hours, Mon–Fri. Orders placed over the weekend go out Monday morning.</dd></div>
+      <div class="cell"><dt>Large batches</dt><dd>Over 150 leads we fill across consecutive daily harvests and email you the schedule first.</dd></div>
+      <div class="cell"><dt>Bad rows</dt><dd>Any row whose owner or address doesn't match the county record is replaced free. Flag it within 7 days.</dd></div>
+      <div class="cell"><dt>Questions</dt><dd>Reply to your receipt, or email <a href="mailto:leadmachine@agentmail.to">leadmachine@agentmail.to</a> and quote your Stripe receipt number.</dd></div>
+    </dl>
+
+    <div class="panel">
+      <h2>Set your filters</h2>
+      <form id="filterForm" novalidate>
+        <div class="field">
+          <label for="email">Email used at checkout</label>
+          <input type="email" id="email" name="email" placeholder="you@company.com" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="counties">Counties and ZIPs to target</label>
+          <input type="text" id="counties" name="counties" placeholder="Miami-Dade — 33177, 33193, 33155" required>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="minscore">Minimum score</label>
+            <input type="text" id="minscore" name="minscore" placeholder="25">
+          </div>
+          <div class="field">
+            <label for="receipt">Stripe receipt no. (optional)</label>
+            <input type="text" id="receipt" name="receipt" placeholder="1234-5678">
+          </div>
+        </div>
+        <button type="submit" class="submit" id="submitBtn">Send my filters</button>
+        <div class="msg" id="formMsg" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+
+    <a href="/" class="back">← Back to LeadMachine FL</a>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  © 2026 LeadMachine FL · Data only; all outreach and its compliance is the buyer's responsibility ·
+  <a href="/terms.html">Terms</a>
+</div></footer>
+
+<script>
+(function(){
+  var form=document.getElementById('filterForm'),
+      btn=document.getElementById('submitBtn'),
+      msg=document.getElementById('formMsg');
+  function show(k,t){msg.className='msg '+k;msg.textContent=t;}
+
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var email=form.email.value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){
+      show('err','Use the same email you paid with so we can match your order.');
+      form.email.focus();return;
+    }
+    if(form.counties.value.trim().length<2){
+      show('err','Add at least one county or ZIP.');form.counties.focus();return;
+    }
+    btn.disabled=true;btn.textContent='Sending…';show('','');
+
+    fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        email:email,
+        counties:form.counties.value.trim(),
+        volume:'paid order',
+        source:'purchase · min score '+(form.minscore.value.trim()||'any')+
+               ' · receipt '+(form.receipt.value.trim()||'n/a'),
+        referrer:document.referrer||'stripe'
+      })})
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(){
+      form.reset();
+      show('ok','Filters received. Your CSV is queued — watch '+email+'.');
+      btn.textContent='Filters received';
+    })
+    .catch(function(){
+      btn.disabled=false;btn.textContent='Send my filters';
+      show('err','That didn’t send. Email leadmachine@agentmail.to with your filters and receipt number.');
+    });
+  });
+})();
+</script>
+</body>
+</html>

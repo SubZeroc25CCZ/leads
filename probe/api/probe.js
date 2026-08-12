@@ -5,15 +5,23 @@
 const SECRET = "lmp_7g2Vq9xKd4RwTz81";
 
 module.exports = async (req, res) => {
-  const { url, secret, limit } = req.query || {};
+  const { url, secret, limit, method, body, ct } = req.query || {};
   if (secret !== SECRET) return res.status(401).json({ error: "unauthorized" });
   if (!url) return res.status(400).json({ error: "missing url" });
   let u;
   try { u = new URL(url); } catch (e) { return res.status(400).json({ error: "bad url" }); }
   if (u.protocol !== "https:") return res.status(400).json({ error: "https only" });
+  const m = (method || "GET").toUpperCase();
+  if (!["GET", "POST"].includes(m)) return res.status(400).json({ error: "GET/POST only" });
   try {
     const r = await fetch(url, {
-      headers: { "user-agent": "Mozilla/5.0 (compatible; LeadMachineProbe/1.0)", "accept": "application/json,text/html;q=0.9,*/*;q=0.8" },
+      method: m,
+      headers: {
+        "user-agent": "Mozilla/5.0 (compatible; LeadMachineProbe/1.0)",
+        "accept": "application/json,text/html;q=0.9,*/*;q=0.8",
+        ...(m === "POST" ? { "content-type": ct || "application/json" } : {})
+      },
+      ...(m === "POST" ? { body: body || "" } : {}),
       redirect: "follow",
       signal: AbortSignal.timeout(25000)
     });

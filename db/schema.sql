@@ -75,3 +75,35 @@ CREATE TABLE harvest_log (
   note TEXT,
   ran_at TEXT
 );
+
+-- Engine 4 (ping tree) — added 2026-08-12, ready to activate at 3+ active buyers.
+CREATE TABLE buyer_filters (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  buyer_id INTEGER,
+  vertical TEXT DEFAULT 'cash_buyer',
+  counties TEXT DEFAULT '[]',
+  zips TEXT DEFAULT '[]',
+  min_score INTEGER DEFAULT 0,
+  require_signals TEXT DEFAULT '[]',
+  max_per_day INTEGER DEFAULT 0,
+  bid_per_lead REAL DEFAULT 0,
+  exclusive INTEGER DEFAULT 0,
+  active INTEGER DEFAULT 1,
+  created_at TEXT
+);
+
+CREATE TABLE lead_offers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  lead_id INTEGER,
+  round_ref TEXT,
+  created_at TEXT
+);
+
+CREATE TABLE lead_bids (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  offer_id INTEGER,
+  buyer_id INTEGER,
+  bid REAL DEFAULT 0,
+  won INTEGER DEFAULT 0,
+  created_at TEXT
+);

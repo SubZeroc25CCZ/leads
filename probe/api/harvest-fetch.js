@@ -8,7 +8,12 @@
 const SECRET = "lmp_7g2Vq9xKd4RwTz81";
 
 const keyOf = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-const cleanAddr = (s) => String(s || "").replace(/\s+/g, " ").trim();
+// Deerfield's USER_Site_Address repeats the unit designator after the ZIP
+// ("... DEERFIELD BEACH, FL 33064 B7", "... FL 33442 #227"). Nothing meaningful
+// follows a ZIP in a US address, so anything trailing it is dropped — otherwise
+// the same property yields two address_keys and dedup misses it.
+const stripAfterZip = (s) => s.replace(/(\bFL\s+\d{5})\b.*$/i, "$1");
+const cleanAddr = (s) => stripAfterZip(String(s || "").replace(/\s+/g, " ").trim()).trim();
 
 module.exports = async (req, res) => {
   const { secret, url, map, county } = req.query || {};

@@ -1,0 +1,648 @@
+<title>LeadMachine</title>
+<style>
+  :root {
+    --bg: #f9f9f7;
+    --surface: #fcfcfb;
+    --surface-2: #f3f2ee;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --accent-ink: #1c5cab;
+    --accent-soft: #cde2fb;
+    --series-1: #2a78d6;  /* Lee */
+    --series-2: #eb6834;  /* Miami-Dade */
+    --series-3: #17806f;  /* Orange */
+    --series-4: #7350a0;  /* Broward */
+    --good: #0ca30c;
+    --good-text: #006300;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --range-fill: #86b6ef;
+    --range-hi: #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d0d0d;
+      --surface: #1a1a19;
+      --surface-2: #232322;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-ink: #6da7ec;
+      --accent-soft: #10314f;
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #2fa894;
+      --series-4: #9d80cb;
+      --good: #0ca30c;
+      --good-text: #0ca30c;
+      --range-fill: #1c5cab;
+      --range-hi: #3987e5;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #232322;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255,255,255,0.10);
+    --accent: #3987e5;
+    --accent-ink: #6da7ec;
+    --accent-soft: #10314f;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #2fa894;
+    --series-4: #9d80cb;
+    --good: #0ca30c;
+    --good-text: #0ca30c;
+    --range-fill: #1c5cab;
+    --range-hi: #3987e5;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.6;
+    direction: rtl;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 20px 80px; }
+
+  /* ---------- header ---------- */
+  header.page-head { padding: 44px 0 0; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; direction: ltr; text-align: right;
+  }
+  h1.brand {
+    margin: 6px 0 4px; font-size: clamp(30px, 5vw, 42px); font-weight: 800;
+    letter-spacing: -0.02em; direction: ltr; text-align: right;
+  }
+  h1.brand .fl { color: var(--accent); }
+  .lede { color: var(--ink-2); max-width: 62ch; margin: 0 0 6px; font-size: 16px; }
+  .snapshot-line { font-size: 13px; color: var(--muted); }
+  .snapshot-line b { color: var(--ink-2); font-weight: 600; }
+
+  /* ---------- tabs ---------- */
+  nav.tabs {
+    display: flex; gap: 4px; margin: 26px 0 0; border-bottom: 1px solid var(--grid);
+    overflow-x: auto; scrollbar-width: none;
+  }
+  nav.tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    appearance: none; background: none; border: none; cursor: pointer;
+    font: inherit; font-size: 14.5px; font-weight: 600; color: var(--ink-2);
+    padding: 10px 14px 12px; border-bottom: 2.5px solid transparent;
+    margin-bottom: -1px; white-space: nowrap; border-radius: 6px 6px 0 0;
+  }
+  .tab-btn:hover { background: var(--surface-2); color: var(--ink); }
+  .tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .tab-btn[aria-selected="true"] { color: var(--accent-ink); border-bottom-color: var(--accent); }
+  .panel { display: none; padding-top: 28px; }
+  .panel.active { display: block; }
+
+  /* ---------- shared components ---------- */
+  h2.sec { font-size: 21px; font-weight: 700; margin: 34px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  h2.sec:first-child { margin-top: 0; }
+  .sec-note { color: var(--ink-2); font-size: 14px; margin: 0 0 16px; max-width: 68ch; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 20px;
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em;
+    padding: 2px 9px; border-radius: 999px; white-space: nowrap;
+  }
+  .chip .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .chip.live   { background: color-mix(in srgb, var(--good) 14%, var(--surface)); color: var(--good-text); }
+  .chip.live .dot { background: var(--good); }
+  .chip.warn   { background: color-mix(in srgb, var(--warning) 18%, var(--surface)); color: var(--ink); }
+  .chip.warn .dot { background: var(--warning); }
+  .chip.crit   { background: color-mix(in srgb, var(--critical) 14%, var(--surface)); color: var(--critical); }
+  .chip.crit .dot { background: var(--critical); }
+  .chip.idle   { background: var(--surface-2); color: var(--ink-2); }
+  .chip.idle .dot { background: var(--muted); }
+  .chip.acc    { background: var(--accent-soft); color: var(--accent-ink); }
+  .chip.acc .dot { background: var(--accent); }
+
+  table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.data th {
+    text-align: right; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--grid);
+  }
+  table.data td { padding: 9px 10px; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data .num { font-variant-numeric: tabular-nums; direction: ltr; text-align: right; }
+  .table-scroll { overflow-x: auto; }
+
+  /* ---------- stat tiles ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .tile .k { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: var(--muted); text-transform: uppercase; }
+  .tile .v { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin: 2px 0 4px; direction: ltr; text-align: right; }
+  .tile .s { font-size: 12.5px; color: var(--ink-2); }
+
+  /* ---------- bar chart (daily inflow) ---------- */
+  .viz { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px 14px; }
+  .viz-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .viz-title { font-size: 14.5px; font-weight: 700; }
+  .legend { display: flex; gap: 14px; font-size: 12.5px; color: var(--ink-2); }
+  .legend .li { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .chart-area { direction: ltr; }
+  .cols { display: flex; align-items: flex-end; gap: 20px; height: 190px; padding: 0 6px; border-bottom: 1.5px solid var(--baseline); }
+  .day { flex: 1; display: flex; align-items: flex-end; justify-content: center; gap: 3px; height: 100%; position: relative; }
+  .bar { width: 18px; max-width: 22%; border-radius: 4px 4px 0 0; position: relative; cursor: default; min-height: 2px; }
+  .bar.lee { background: var(--series-1); }
+  .bar.mdc { background: var(--series-2); }
+  .bar.orl { background: var(--series-3); }
+  .bar.brw { background: var(--series-4); }
+  .bar.zero { background: var(--grid); height: 2px !important; border-radius: 0; }
+  .bar .val {
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    font-size: 11px; font-weight: 600; color: var(--ink-2); padding-bottom: 2px;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .day-labels { display: flex; gap: 20px; padding: 6px 6px 0; }
+  .day-labels span { flex: 1; text-align: center; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .viz-foot { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  /* tooltip */
+  #tip {
+    position: fixed; z-index: 50; pointer-events: none; display: none;
+    background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 600;
+    padding: 5px 9px; border-radius: 6px; white-space: nowrap; direction: rtl;
+  }
+
+  /* ---------- coverage bars ---------- */
+  .covbar { display: flex; align-items: center; gap: 8px; min-width: 130px; direction: ltr; }
+  .covbar .track { flex: 1; height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+  .covbar .fill { height: 100%; border-radius: 4px; background: var(--accent); }
+  .covbar .fill.none { background: var(--grid); }
+  .covbar .pct { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--ink-2); width: 38px; text-align: right; }
+
+  /* ---------- range chart (verticals) ---------- */
+  .range-row { display: grid; grid-template-columns: 170px 1fr 110px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--grid); }
+  .range-row:last-child { border-bottom: none; }
+  .range-name { font-size: 13.5px; font-weight: 600; }
+  .range-name .en { display: block; font-size: 11px; color: var(--muted); font-weight: 500; direction: ltr; text-align: right; }
+  .range-track { position: relative; height: 14px; background: var(--surface-2); border-radius: 7px; direction: ltr; }
+  .range-fill { position: absolute; top: 0; bottom: 0; border-radius: 7px; background: var(--range-fill); }
+  .range-fill.hot { background: var(--range-hi); }
+  .range-val { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; direction: ltr; text-align: left; }
+  .range-axis { display: flex; justify-content: space-between; direction: ltr; font-size: 11px; color: var(--muted); padding: 6px 0 0; font-variant-numeric: tabular-nums; }
+  @media (max-width: 560px) {
+    .range-row { grid-template-columns: 1fr; gap: 6px; }
+    .range-val { text-align: right; }
+  }
+
+  /* ---------- engines ---------- */
+  .engines { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+  .engine { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .engine .num { font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); }
+  .engine h3 { margin: 0; font-size: 16.5px; }
+  .engine p { margin: 0; font-size: 13.5px; color: var(--ink-2); flex: 1; }
+  .engine .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+  /* ---------- roadmap ---------- */
+  .roadmap { list-style: none; margin: 0; padding: 0; }
+  .roadmap li { display: grid; grid-template-columns: 26px 1fr auto; gap: 12px; padding: 12px 4px; border-bottom: 1px solid var(--grid); align-items: start; }
+  .roadmap li:last-child { border-bottom: none; }
+  .step-mark { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .step-mark.done { background: color-mix(in srgb, var(--good) 16%, var(--surface)); color: var(--good-text); }
+  .step-mark.next { background: var(--accent); color: #fff; }
+  .step-mark.wait { background: var(--surface-2); color: var(--muted); }
+  .roadmap .t { font-weight: 600; font-size: 14.5px; }
+  .roadmap .d { font-size: 13px; color: var(--ink-2); max-width: 62ch; }
+
+  .rulebox { border-right: 3px solid var(--accent); background: var(--surface); border-radius: 8px; padding: 14px 18px; margin-top: 14px; }
+  .rulebox b { color: var(--accent-ink); }
+  .rulebox p { margin: 4px 0; font-size: 14px; color: var(--ink-2); }
+
+  .warncard { border-right: 3px solid var(--warning); background: var(--surface); border-radius: 8px; padding: 14px 18px; }
+  .warncard p { margin: 4px 0; font-size: 14px; color: var(--ink-2); }
+  .warncard b { color: var(--ink); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ---------- pitch (english, ltr) ---------- */
+  .pitch { direction: ltr; text-align: left; }
+  .pitch .eyebrow { text-align: left; }
+  .pitch h2.hero { font-size: clamp(26px, 4.5vw, 36px); font-weight: 800; letter-spacing: -0.02em; margin: 8px 0 10px; text-wrap: balance; }
+  .pitch h2.hero .fl { color: var(--accent); }
+  .pitch .sub { color: var(--ink-2); font-size: 16px; max-width: 62ch; margin: 0 0 24px; }
+  .pitch h3 { font-size: 16.5px; margin: 26px 0 8px; }
+  .pitch table.data th, .pitch table.data td { text-align: left; }
+  .pitch .cta {
+    display: inline-block; background: var(--accent); color: #fff; font-weight: 700;
+    padding: 11px 22px; border-radius: 8px; text-decoration: none; font-size: 15px;
+  }
+  .pitch .cta:hover { background: var(--accent-ink); }
+  .pitch .cta-note { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+  .bullets { margin: 0; padding: 0 0 0 18px; font-size: 14.5px; color: var(--ink-2); }
+  .bullets li { margin: 6px 0; }
+  .bullets b { color: var(--ink); }
+  .draft-note {
+    border: 1px dashed var(--baseline); border-radius: 8px; padding: 10px 14px;
+    font-size: 12.5px; color: var(--muted); margin-top: 22px;
+  }
+
+  footer.page-foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--grid); font-size: 12.5px; color: var(--muted); }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<div class="wrap">
+  <header class="page-head">
+    <div class="eyebrow">Florida · Distressed-Property Data Leads</div>
+    <h1 class="brand">LeadMachine <span class="fl">FL</span></h1>
+    <p class="lede">מכונת לידים אוטומטית לנדל"ן במצוקה: איסוף יומי מ-public records, ניקוד, והפצה לקונים במספר ורטיקלים. הדף הזה הוא תמונת המצב, המפה העסקית ותוכנית־האב — במסמך אחד.</p>
+    <div class="snapshot-line">Snapshot חי מ-D1 (leadmachine-db): <b>12.08.2026, אחרי קציר ארבעת המקורות (10:30 UTC)</b> · כל המספרים בלשונית "מצב המערכת" נמשכו מהמסד האמיתי</div>
+
+    <nav class="tabs" role="tablist" aria-label="סעיפי הדף">
+      <button class="tab-btn" role="tab" aria-selected="true" aria-controls="p-status" id="t-status">מצב המערכת</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p-verticals" id="t-verticals">מפת הוורטיקלים</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p-plan" id="t-plan">תוכנית־אב</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p-pitch" id="t-pitch">Buyer Pitch (EN)</button>
+    </nav>
+  </header>
+
+  <!-- ============ TAB 1: STATUS ============ -->
+  <section class="panel active" id="p-status" role="tabpanel" aria-labelledby="t-status">
+    <h2 class="sec">מצב המערכת — נתוני אמת מהמסד</h2>
+    <p class="sec-note">ארבעה מקורות ממשלתיים חינמיים רצים ב-Cron יומי (09:32 UTC), ואחריו Routine יומי (10:00 UTC) שמושך בעלים/מיקוד מה-Property Appraiser ומסמן absentee. דה-דופליקציה לפי כתובת; כתובות לא-שמישות מסומנות invalid ולא נמכרות. <b>היום ה-cron נפל (500) והקציר הורץ ידנית</b> — פירוט בטבלת הריצות למטה.</p>
+
+    <div class="tiles">
+      <div class="tile">
+        <div class="k">לידים זמינים</div>
+        <div class="v">1,899</div>
+        <div class="s">‏+969 היום · +44 שסומנו invalid ב-QA (קטעי רחוב, בלי כתובת)</div>
+      </div>
+      <div class="tile">
+        <div class="k">לידים בציון 30</div>
+        <div class="v">199</div>
+        <div class="s"><span class="chip acc"><span class="dot"></span>code violation + absentee</span></div>
+      </div>
+      <div class="tile">
+        <div class="k">מקורות אוטומטיים</div>
+        <div class="v">4</div>
+        <div class="s">Lee · Miami-Dade · <b>Orange · Broward — כולם קצרו היום</b></div>
+      </div>
+      <div class="tile">
+        <div class="k">קונים בטבלה</div>
+        <div class="v">30</div>
+        <div class="s">‏21 בפייפליין (19 prospect · 2 contacted) · 9 בלי מייל לגיטימי</div>
+      </div>
+    </div>
+
+    <h2 class="sec">קליטה יומית לפי מחוז</h2>
+    <p class="sec-note">לידים חדשים שנכנסו למסד בכל יום. ב-10.08 ה-Cron רץ אך כל הרשומות היו כפילויות של ימים קודמים — אפס חדשים זה סימן שהדה-דופליקציה עובדת, לא שהמערכת נפלה. ב-12.08 נוספו שני המקורות החדשים והקציר הורץ ידנית (ה-cron החזיר 500).</p>
+    <div class="viz">
+      <div class="viz-head">
+        <div class="viz-title">לידים חדשים ליום · 08–12 באוגוסט</div>
+        <div class="legend">
+          <span class="li"><span class="sw" style="background:var(--series-1)"></span>Lee (Cape Coral)</span>
+          <span class="li"><span class="sw" style="background:var(--series-2)"></span>Miami-Dade</span>
+          <span class="li"><span class="sw" style="background:var(--series-3)"></span>Orange (Orlando)</span>
+          <span class="li"><span class="sw" style="background:var(--series-4)"></span>Broward (Deerfield)</span>
+        </div>
+      </div>
+      <div class="chart-area">
+        <div class="cols">
+          <div class="day">
+            <div class="bar lee" style="height:100%" data-tip="Lee · 08.08 · 472 לידים"><span class="val">472</span></div>
+            <div class="bar mdc" style="height:73.5%" data-tip="Miami-Dade · 08.08 · 347 לידים"><span class="val">347</span></div>
+          </div>
+          <div class="day">
+            <div class="bar lee" style="height:5.7%" data-tip="Lee · 09.08 · 27 לידים"><span class="val">27</span></div>
+            <div class="bar mdc zero" data-tip="Miami-Dade · 09.08 · 0 חדשים (הכל כפילויות)"><span class="val">0</span></div>
+          </div>
+          <div class="day">
+            <div class="bar lee zero" data-tip="Lee · 10.08 · 0 חדשים (הכל כפילויות)"><span class="val">0</span></div>
+            <div class="bar mdc zero" data-tip="Miami-Dade · 10.08 · 0 חדשים (הכל כפילויות)"><span class="val">0</span></div>
+          </div>
+          <div class="day">
+            <div class="bar lee" style="height:13.1%" data-tip="Lee · 11.08 · 62 לידים"><span class="val">62</span></div>
+            <div class="bar mdc" style="height:14%" data-tip="Miami-Dade · 11.08 · 66 לידים"><span class="val">66</span></div>
+          </div>
+          <div class="day">
+            <div class="bar lee" style="height:41.5%" data-tip="Lee · 12.08 · 196 לידים"><span class="val">196</span></div>
+            <div class="bar mdc" style="height:14.2%" data-tip="Miami-Dade · 12.08 · 67 לידים"><span class="val">67</span></div>
+            <div class="bar orl" style="height:91.7%" data-tip="Orange · 12.08 · 433 לידים (קציר ראשון)"><span class="val">433</span></div>
+            <div class="bar brw" style="height:57.8%" data-tip="Broward · 12.08 · 273 לידים (קציר ראשון)"><span class="val">273</span></div>
+          </div>
+        </div>
+        <div class="day-labels"><span>08.08</span><span>09.08</span><span>10.08</span><span>11.08</span><span>12.08</span></div>
+      </div>
+      <div class="viz-foot">היום הראשון (08.08) כולל את מילוי־הבסיס ההיסטורי של 30 הימים האחרונים; מכאן והלאה נכנס רק מה שחדש באמת. ב-12.08 הקפיצה היא מילוי־הבסיס של Orange ו-Broward, לא קצב יומי.</div>
+    </div>
+
+    <h2 class="sec">כיסוי שדות — אחרי ההעשרה</h2>
+    <p class="sec-note">Miami-Dade עלה מ"כתובת בלבד" ל-98% בעלים + 99% מיקוד, דרך הצלבת FOLIO מול ה-Property Appraiser. Broward מגיע עם בעלים+מיקוד מהמקור עצמו. Orange הוא כתובת בלבד — ה-enrichment שלו טרם נבנה. טלפון עדיין 0% לכולם — skip tracing הוא שלב בתשלום שטרם הופעל, והוא מכפיל המחיר הבא.</p>
+    <div class="card table-scroll">
+      <table class="data">
+        <thead>
+          <tr><th>מחוז</th><th>לידים</th><th>שם בעלים</th><th>מיקוד</th><th>Absentee</th><th>טלפון</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Lee</b> · Cape Coral</td>
+            <td class="num">757</td>
+            <td><span class="covbar"><span class="track"><span class="fill" style="width:100%"></span></span><span class="pct">100%</span></span></td>
+            <td><span class="covbar"><span class="track"><span class="fill" style="width:100%"></span></span><span class="pct">100%</span></span></td>
+            <td class="num">— בתור</td>
+            <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
+          </tr>
+          <tr>
+            <td><b>Miami-Dade</b></td>
+            <td class="num">436</td>
+            <td><span class="covbar"><span class="track"><span class="fill" style="width:98%"></span></span><span class="pct">98%</span></span></td>
+            <td><span class="covbar"><span class="track"><span class="fill" style="width:99%"></span></span><span class="pct">99%</span></span></td>
+            <td class="num"><b>199</b> (46%)</td>
+            <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
+          </tr>
+          <tr>
+            <td><b>Orange</b> · Orlando</td>
+            <td class="num">433</td>
+            <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
+            <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
+            <td class="num">— אין enrichment</td>
+            <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
+          </tr>
+          <tr>
+            <td><b>Broward</b> · Deerfield Beach</td>
+            <td class="num">273</td>
+            <td><span class="covbar"><span class="track"><span class="fill" style="width:100%"></span></span><span class="pct">100%</span></span></td>
+            <td><span class="covbar"><span class="track"><span class="fill" style="width:100%"></span></span><span class="pct">100%</span></span></td>
+            <td class="num">— בתור</td>
+            <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="height:14px"></div>
+    <div class="warncard">
+      <p><b>האמת על האיכות, בלי ייפוי:</b> 1,700 לידים עדיין בציון 15 (סיגנל בודד) ו-199 בציון 30 (code violation + absentee — בעלים שגר בכתובת אחרת, לרוב משקיע עייף). ה-199 האלה הם המוצר החזק כרגע, וכולם Miami-Dade — כי רק שם רץ זיהוי absentee. 433 מתוך הגידול של היום (Orange) הם כתובת בלבד, בלי שם בעלים. סיגנל ה-tax delinquent חסום בינתיים: רשימות החוב הרשמיות של המחוזות יושבות מאחורי חסימת Cloudflare שדורשת headless browser או דאטה ברישיון — מתועד כשדרוג הבא.</p>
+    </div>
+
+    <h2 class="sec">ריצות אחרונות של ה-Harvester</h2>
+    <p class="sec-note">ה-cron של 12.08 החזיר 500 אחרי הוספת שני המקורות ולא רשם כלום ל-harvest_log. ארבעת ה-endpoints נבדקו בנפרד ותקינים — הבאג בקוד הפרוס ב-Vercel, שאינו בגיט. הקציר הורץ ידנית דרך <code>harvest-fetch</code> (שכן בגיט) והכניס 969 לידים. <b>נדרשת פעולת בעלים:</b> משיכת קבצי <code>api/*</code> מדשבורד Vercel חזרה לריפו.</p>
+    <div class="card table-scroll">
+      <table class="data">
+        <thead><tr><th>תאריך (UTC)</th><th>מקור</th><th>נמשכו</th><th>נכנסו</th><th>כפילויות</th><th>סטטוס</th></tr></thead>
+        <tbody>
+          <tr><td class="num">12.08 10:30</td><td>deerfield_code_cases</td><td class="num">329</td><td class="num"><b>273</b></td><td class="num">56</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית</span></td></tr>
+          <tr><td class="num">12.08 10:30</td><td>orlando_code_enforcement</td><td class="num">496</td><td class="num"><b>433</b></td><td class="num">63</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית</span></td></tr>
+          <tr><td class="num">12.08 10:30</td><td>capecoral_code_open</td><td class="num">211</td><td class="num"><b>196</b></td><td class="num">15</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית</span></td></tr>
+          <tr><td class="num">12.08 10:30</td><td>mdc_code_violations</td><td class="num">90</td><td class="num"><b>67</b></td><td class="num">20</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית</span></td></tr>
+          <tr><td class="num">12.08 09:32</td><td>cron (כל 4 המקורות)</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip crit"><span class="dot"></span>HTTP 500</span></td></tr>
+          <tr><td class="num">11.08 09:32</td><td>mdc_code_violations</td><td class="num">500</td><td class="num"><b>66</b></td><td class="num">133</td><td><span class="chip live"><span class="dot"></span>OK</span></td></tr>
+          <tr><td class="num">11.08 09:32</td><td>capecoral_code_open</td><td class="num">500</td><td class="num"><b>62</b></td><td class="num">27</td><td><span class="chip live"><span class="dot"></span>OK</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ TAB 2: VERTICALS ============ -->
+  <section class="panel" id="p-verticals" role="tabpanel" aria-labelledby="t-verticals">
+    <h2 class="sec">מפת הוורטיקלים — אותו ליד, כמה שווקים</h2>
+    <p class="sec-note">זה הסוד של תעשיית ה-lead gen: "בעל בית במצוקה" הוא מוצר בכמה ורטיקלים במקביל. ליד שלא נסגר אצל קונה מזומן נמכר שוב לסוכן, למממן־מחדש או לקבלן גגות. תשתית ייצור אחת — כמה זרמי הכנסה.</p>
+
+    <div class="viz">
+      <div class="viz-head">
+        <div class="viz-title">טווח מחיר לליד לפי ורטיקל (USD)</div>
+        <span class="chip acc"><span class="dot"></span>כחול כהה = הוורטיקל הפעיל היום</span>
+      </div>
+      <div>
+        <div class="range-row">
+          <div class="range-name">ביטוח ומשפטי (Mass Tort)<span class="en">Insurance &amp; Legal</span></div>
+          <div class="range-track"><div class="range-fill" style="left:28%; width:72%"></div></div>
+          <div class="range-val">$150–500+</div>
+        </div>
+        <div class="range-row">
+          <div class="range-name">קוני מזומן / Wholesalers<span class="en">Cash Buyers — הקונה הקיים שלך</span></div>
+          <div class="range-track"><div class="range-fill hot" style="left:9%; width:48%"></div></div>
+          <div class="range-val">$50–300</div>
+        </div>
+        <div class="range-row">
+          <div class="range-name">שירותי בית<span class="en">Roofing · HVAC · Solar</span></div>
+          <div class="range-track"><div class="range-fill" style="left:5.5%; width:23%"></div></div>
+          <div class="range-val">$30–150</div>
+        </div>
+        <div class="range-row">
+          <div class="range-name">הסדרי חוב<span class="en">Debt Settlement (הערכה)</span></div>
+          <div class="range-track"><div class="range-fill" style="left:7.5%; width:21%"></div></div>
+          <div class="range-val">$40–150</div>
+        </div>
+        <div class="range-row">
+          <div class="range-name">משכנתא / מימון מחדש<span class="en">Mortgage &amp; Refi (הערכה)</span></div>
+          <div class="range-track"><div class="range-fill" style="left:5.5%; width:13.5%"></div></div>
+          <div class="range-val">$30–100</div>
+        </div>
+        <div class="range-row">
+          <div class="range-name">סוכני נדל"ן<span class="en">Listing Leads (הערכה)</span></div>
+          <div class="range-track"><div class="range-fill" style="left:3.5%; width:15.5%"></div></div>
+          <div class="range-val">$20–100</div>
+        </div>
+        <div class="range-axis"><span>$0</span><span>$125</span><span>$250</span><span>$375</span><span>$500+</span></div>
+      </div>
+      <div class="viz-foot">טווחים מסומנים "הערכה" הם אומדני שוק מקובלים לוורטיקל — לא מחירים שסוכמו עם קונה. השאר מהשיחות שניהלנו.</div>
+    </div>
+
+    <h2 class="sec">מי קונה מה — ואיך מגיעים אליו</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;font-size:16px">קוני מזומן / Wholesalers</h3><span class="chip acc"><span class="dot"></span>פעיל</span></div>
+        <p style="font-size:13.5px;color:var(--ink-2)"><b style="color:var(--ink)">מה הם רוצים:</b> כתובת + בעלים + סיגנל מצוקה + טלפון. exclusive מעלה מחיר משמעותית.<br>
+        <b style="color:var(--ink)">איך מוצאים אותם:</b> רישומי מכירה במזומן ב-public records (קנייה בלי משכנתא = קונה פעיל, עם שם חברה), אתרי "We Buy Houses", קבוצות wholesalers. יש כבר קונה אחד — ממתינים ל-4 תשובות ממנו.</p>
+      </div>
+      <div class="card">
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;font-size:16px">ביטוח ומשפטי (Mass Tort)</h3><span class="chip idle"><span class="dot"></span>שלב 3</span></div>
+        <p style="font-size:13.5px;color:var(--ink-2)"><b style="color:var(--ink)">מה הם רוצים:</b> הוורטיקל הכי יקר — אבל הכי תובעני: TCPA consent מתועד (TrustedForm), intent מאומת.<br>
+        <b style="color:var(--ink)">איך מוצאים אותם:</b> רשתות aggregators משפטיות ו-networks של ביטוח. נכנסים רק אחרי שיש מנגנון consent.</p>
+      </div>
+      <div class="card">
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;font-size:16px">שירותי בית</h3><span class="chip idle"><span class="dot"></span>שלב 2</span></div>
+        <p style="font-size:13.5px;color:var(--ink-2)"><b style="color:var(--ink)">מה הם רוצים:</b> code violations זה בדיוק הסיגנל שלהם — גג שבור, חצר מוזנחת = עבודה. הדאטה הקיימת שלנו רלוונטית להם כבר היום.<br>
+        <b style="color:var(--ink)">איך מוצאים אותם:</b> קבלני גגות/HVAC/סולאר מקומיים ב-Google Maps לפי county, אגודות קבלנים.</p>
+      </div>
+      <div class="card">
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;font-size:16px">סוכנים · משכנתא · חוב</h3><span class="chip idle"><span class="dot"></span>שלב 2–3</span></div>
+        <p style="font-size:13.5px;color:var(--ink-2)"><b style="color:var(--ink)">מה הם רוצים:</b> בעל בית במצוקה שלא מוכר לקונה מזומן — הוא ליד listing לסוכן, או ליד refi/הסדר חוב. אותו ליד, חיים שניים.<br>
+        <b style="color:var(--ink)">איך מוצאים אותם:</b> ברוקרים מקומיים, רשתות referral של סוכנים, aggregators של משכנתאות.</p>
+      </div>
+    </div>
+
+    <div class="rulebox">
+      <p><b>עקרון ה-leverage:</b> ליד אחד ≠ מכירה אחת. ברגע שיש 3+ קונים פעילים בוורטיקלים שונים, כל ליד "מצלצל" לכולם במקביל והגבוה ביותר זוכה (ping tree). אבל הסדר קודם: קודם מוכיחים איכות מול קונה אחד — מערכת הפצה שווה משהו רק כשיש נפח וקונים.</p>
+    </div>
+  </section>
+
+  <!-- ============ TAB 3: MASTER PLAN ============ -->
+  <section class="panel" id="p-plan" role="tabpanel" aria-labelledby="t-plan">
+    <h2 class="sec">תוכנית־אב — שלושה מנועים, מכונה אחת</h2>
+    <p class="sec-note">הכל על ה-stack הקיים: Cloudflare Workers + D1, Cron יומי, אפס תקציב פרסום. מוכרים דאטה בלבד — ה-outreach לבעלי הבתים נשאר אצל הקונה, כך שחבות ה-TCPA נשארת אצלו.</p>
+
+    <div class="engines">
+      <div class="engine">
+        <div class="row"><span class="num">מנוע 1</span><span class="chip live"><span class="dot"></span>חי ורץ</span></div>
+        <h3>ייצור לידים</h3>
+        <p>public records → ניקוד → D1. ארבעה מקורות אוטומטיים (Lee, Miami-Dade, Orange, Broward), העשרת בעלים/מיקוד + זיהוי absentee רץ יומית, QA אוטומטי. הוספת מחוז = שורה אחת ב-D1, בלי redeploy.</p>
+      </div>
+      <div class="engine">
+        <div class="row"><span class="num">מנוע 2</span><span class="chip warn"><span class="dot"></span>הבא בתור</span></div>
+        <h3>ציד קונים</h3>
+        <p>הקונים נמצאים באותם public records: קנייה במזומן = cash buyer פעיל עם שם וכתובת. Worker מרכיב טבלת buyers, ורצף outreach אוטומטי מ-AgentMail עם 10 לידים חינם כדוגמה. הליד משכנע — לא המייל.</p>
+      </div>
+      <div class="engine">
+        <div class="row"><span class="num">מנוע 3</span><span class="chip idle"><span class="dot"></span>ממתין לקונים</span></div>
+        <h3>מסירה וגבייה</h3>
+        <p>CSV ממותג או פורטל קטן, תשלום ב-Stripe payment link, מחיר לפי ורטיקל. כשיש 3+ קונים פעילים — שכבת ping tree שמפזרת כל ליד לקונה הכי משלם.</p>
+      </div>
+    </div>
+
+    <h2 class="sec">סדר הביצוע</h2>
+    <p class="sec-note">כל שלב פותח את הבא. הציון של הליד קובע את המחיר; הקונה הראשון קובע את הפורמט; רק נפח + כמה קונים מצדיקים מערכת הפצה.</p>
+    <ol class="roadmap">
+      <li>
+        <span class="step-mark done">✓</span>
+        <span><span class="t">תשתית ייצור אוטומטית</span><br><span class="d">ארבעה מקורות ממשלתיים חינמיים, Cron יומי, ניקוד בסיסי, דה-דופליקציה. 1,943 לידים במסד (1,899 זמינים).</span></span>
+        <span class="chip live"><span class="dot"></span>בוצע</span>
+      </li>
+      <li>
+        <span class="step-mark done">✓</span>
+        <span><span class="t">העשרה + absentee stacking</span><br><span class="d">בוצע (12.08): 98% מלידי Miami-Dade עם בעלים/מיקוד מה-Property Appraiser; ‏199 לידים עם absentee קפצו לציון 30. ‏tax delinquent חסום בינתיים (Cloudflare על אתרי המס) — שדרוג עתידי. Orange עדיין בלי enrichment.</span></span>
+        <span class="chip live"><span class="dot"></span>בוצע</span>
+      </li>
+      <li>
+        <span class="step-mark done">✓</span>
+        <span><span class="t">עוד מחוזות FL</span><br><span class="d">בוצע (12.08): Orlando/Orange (‏~2,100 תיקים/30 יום) ו-Deerfield Beach/Broward (‏~330, כולל בעלים) נרשמו ואומתו. Duval, Tampa ו-Fort Lauderdale נבדקו ונפסלו — המערכות שלהם נעולות; מתועד בריפו.</span></span>
+        <span class="chip live"><span class="dot"></span>בוצע</span>
+      </li>
+      <li>
+        <span class="step-mark done">✓</span>
+        <span><span class="t">מנוע ציד הקונים</span><br><span class="d">בוצע (12.08): 30 קונים במסד — 21 בפייפליין, 9 סומנו no_contact (בלי מייל שמותר לפנות אליו). inbox ייעודי ב-AgentMail, תבניות outreach, ואתר קונים חי עם טופס שנכנס ל-D1 + Stripe.</span></span>
+        <span class="chip live"><span class="dot"></span>בוצע</span>
+      </li>
+      <li>
+        <span class="step-mark next">1</span>
+        <span><span class="t">הקונה הראשון סוגר</span><br><span class="d">חסם פתוח: <b>outreach קר מושהה</b> עד תבנית תואמת CAN-SPAM (חסרה כתובת דואר פיזית מהבעלים) ורצוי דומיין שליחה ייעודי. עד אז רק טרנזקציוני — מענה לפניות ו-sample לפי בקשה מהטופס. ברגע שיש קונה: batch ראשון מותאם + Stripe payment link.</span></span>
+        <span class="chip warn"><span class="dot"></span>הבא</span>
+      </li>
+      <li>
+        <span class="step-mark wait">3</span>
+        <span><span class="t">הרחבה לוורטיקלים נוספים</span><br><span class="d">אחרי ש"הלידים טובים" מהקונה הראשון: שירותי בית (הדאטה כבר מתאימה), סוכנים, משכנתא. אותה תשתית ייצור.</span></span>
+        <span class="chip idle"><span class="dot"></span>ממתין</span>
+      </li>
+      <li>
+        <span class="step-mark wait">4</span>
+        <span><span class="t">Ping Tree</span><br><span class="d">רק כשיש 3+ קונים פעילים ונפח: ליד נכנס → ping עם דאטה חלקית לכל הקונים → הצעות בזמן אמת → הגבוה זוכה ומקבל post מלא. גרסה רזה בעצמנו על Workers + D1 במקום $500–1,500/חודש ל-boberdoo.</span></span>
+        <span class="chip idle"><span class="dot"></span>ממתין</span>
+      </li>
+    </ol>
+
+    <div class="rulebox">
+      <p><b>שלושת הקווים האדומים:</b></p>
+      <p>1 · מוכרים <b>דאטה בלבד</b> — ה-outreach לבעלי הבתים על הקונה, חבות TCPA אצלו.</p>
+      <p>2 · <b>איכות לפני נפח</b> — ליד עם consent מתועד שווה פי 3–5 מרשימה גרודה; לא מוכרים ציון 15 במחיר של ציון 70.</p>
+      <p>3 · <b>לא בונים הפצה לפני שיש קונים</b> — ping tree זה שלב 6, לא שלב 1.</p>
+    </div>
+  </section>
+
+  <!-- ============ TAB 4: BUYER PITCH ============ -->
+  <section class="panel pitch" id="p-pitch" role="tabpanel" aria-labelledby="t-pitch">
+    <div class="eyebrow">For Investors &amp; Wholesalers · Florida</div>
+    <h2 class="hero">Fresh distressed-property leads,<br>pulled from county records <span class="fl">daily</span>.</h2>
+    <p class="sub">We monitor official Florida county data sources every day for early distress signals — open code-violation cases, tax delinquency, absentee ownership — score every property, and deliver clean, deduplicated lead files straight to you. Data only: you own the outreach, your process, your compliance.</p>
+
+    <a class="cta" href="https://leadmachine-buyers.vercel.app/" target="_blank" rel="noopener">leadmachine-buyers.vercel.app →</a>
+    <div class="cta-note">דף הנחיתה הציבורי חי (12.08). קונים עם access code מקבלים feed אישי ב-<span dir="ltr">/feed.html?t=…</span> — וה-JSON האישי משמש גם כ-API תוכנתי. אפס secrets בדף; ה-CTA מפנה ל-inbox של AgentMail.</div>
+
+    <h3>Why these leads are different</h3>
+    <ul class="bullets">
+      <li><b>Sourced daily from government records</b> — not recycled lists. Every lead carries a harvest date; most are days old, not months.</li>
+      <li><b>Signal-scored.</b> Each property is scored by stacked distress signals (code violations, tax delinquency, absentee ownership). You see the score and the signals behind it.</li>
+      <li><b>Deduplicated by address.</b> One property, one lead. Re-harvests update the record instead of double-selling it.</li>
+      <li><b>Data only, clean liability line.</b> We sell property data from public records. All homeowner contact and TCPA compliance stays on your side, under your process.</li>
+      <li><b>Exclusive or shared — your call.</b> Exclusive leads are delivered to one buyer only and priced accordingly.</li>
+    </ul>
+
+    <h3>Sample rows from this week's harvest</h3>
+    <div class="card table-scroll">
+      <table class="data">
+        <thead><tr><th>Lead ref</th><th>Property address</th><th>County</th><th>Signals</th><th>Harvested</th></tr></thead>
+        <tbody>
+          <tr><td class="num">LM-…-NKXI</td><td>20535 SW 117 CT · 33177</td><td>Miami-Dade</td><td>code_violation + absentee</td><td class="num">Aug 12</td></tr>
+          <tr><td class="num">LM-…-MCTL</td><td>1234 NE 89 ST · 33138</td><td>Miami-Dade</td><td>code_violation + absentee</td><td class="num">Aug 12</td></tr>
+          <tr><td class="num">LM-…-4031</td><td>4031 NW 7 AVE, Deerfield Beach · 33064</td><td>Broward</td><td>code_violation</td><td class="num">Aug 12</td></tr>
+          <tr><td class="num">LM-…-S5HZ</td><td>1207 E SOUTH ST, Orlando</td><td>Orange</td><td>code_violation</td><td class="num">Aug 12</td></tr>
+          <tr><td class="num">LM-…-6J3N</td><td>4416 MARTINS WAY, Orlando</td><td>Orange</td><td>code_violation</td><td class="num">Aug 12</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cta-note" style="margin-top:8px">Full leads include owner name, city, ZIP, signals and score. Absentee-owner leads (owner's mailing address differs from the property) are flagged and scored higher. Phone-verified tiers coming with skip tracing.</p>
+
+    <h3>Coverage &amp; delivery</h3>
+    <ul class="bullets">
+      <li><b>Live now:</b> Miami-Dade County · Lee County (Cape Coral) · City of Orlando · City of Deerfield Beach — 1,899 available leads. Owner name and ZIP on ~100% of Lee, Broward and Miami-Dade leads, plus an absentee-owner flag on Miami-Dade. Orlando leads are address-only for now.</li>
+      <li><b>Delivery:</b> CSV to your inbox or direct CRM post, daily or weekly — your cadence.</li>
+      <li><b>Filters:</b> by county, ZIP list, signal type, and minimum score.</li>
+    </ul>
+
+    <div class="draft-note">הטיוטה הזו מומשה כאתר חי (leadmachine-buyers) עם טופס שנכנס ישירות ל-D1, עמוד תודה ותשלום דרך Stripe. הלשונית כאן נשארת כעותק עבודה של הניסוח.</div>
+  </section>
+
+  <footer class="page-foot">
+    LeadMachine FL · נתוני snapshot: 12.08.2026, מתוך leadmachine-db (Cloudflare D1) · מסמך עבודה פנימי — הלשונית האנגלית היא טיוטת pitch לקונים
+  </footer>
+</div>
+
+<div id="tip" role="status"></div>
+
+<script>
+  // tabs
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.setAttribute('aria-selected', b === btn ? 'true' : 'false'));
+      panels.forEach(p => p.classList.toggle('active', p.id === btn.getAttribute('aria-controls')));
+    });
+  });
+
+  // bar tooltips
+  const tip = document.getElementById('tip');
+  document.querySelectorAll('.bar[data-tip]').forEach(bar => {
+    bar.addEventListener('mouseenter', () => { tip.textContent = bar.dataset.tip; tip.style.display = 'block'; });
+    bar.addEventListener('mousemove', e => {
+      const pad = 14;
+      let x = e.clientX + pad, y = e.clientY - 30;
+      const r = tip.getBoundingClientRect();
+      if (x + r.width > window.innerWidth - 8) x = e.clientX - r.width - pad;
+      if (y < 8) y = e.clientY + pad;
+      tip.style.left = x + 'px'; tip.style.top = y + 'px';
+    });
+    bar.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  });
+</script>
+
+</body></html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LeadMachine FL — Distressed-Property Leads from County Records</title>
+<meta name="description" content="Daily-harvested, signal-scored distressed-property leads from Florida county records. Data only — you own the outreach." />
+<style>
+:root{--bg:#0b0d10;--panel:#14181d;--line:#232a31;--txt:#e8ebee;--dim:#8a94a0;--acc:#d4af37;--ok:#3ecf8e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:16px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:0 22px}
+header{padding:26px 0;border-bottom:1px solid var(--line)}
+.logo{font-size:19px;letter-spacing:4px;font-weight:600}
+.logo span{color:var(--acc)}
+.hero{padding:72px 0 56px}
+.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.15;font-weight:700;letter-spacing:-.5px;max-width:17ch}
+.hero h1 em{color:var(--acc);font-style:normal}
+.hero p{color:var(--dim);max-width:58ch;margin:18px 0 30px;font-size:17px}
+.cta{display:inline-block;background:var(--acc);color:#0b0d10;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:16px}
+.cta:hover{filter:brightness(1.1)}
+.cta2{display:inline-block;color:var(--txt);border:1px solid var(--line);padding:13px 22px;border-radius:8px;text-decoration:none;margin-left:10px;font-size:15px}
+.cta2:hover{border-color:var(--acc)}
+.stats{display:flex;gap:38px;flex-wrap:wrap;padding:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stat b{display:block;font-size:30px;color:var(--acc);font-weight:700}
+.stat i{font-style:normal;font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px}
+section{padding:56px 0}
+h2{font-size:24px;margin-bottom:8px;letter-spacing:-.3px}
+.sub{color:var(--dim);margin-bottom:28px;max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+.card .n{color:var(--acc);font-weight:700;font-size:13px;letter-spacing:2px}
+.card h3{font-size:17px;margin:8px 0 6px}
+.card p{color:var(--dim);font-size:14.5px}
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;font-weight:500}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;background:#0e1114;border:1px solid var(--line);border-radius:4px;padding:1px 7px;font-size:11.5px;color:var(--dim);margin-right:3px}
+.score{color:var(--acc);font-weight:700}
+.blur{color:var(--dim);letter-spacing:1px}
+.twrap{overflow-x:auto;border-radius:12px}
+.price{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.tier{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px}
+.tier.hot{border-color:var(--acc)}
+.tier h3{font-size:15px;color:var(--dim);font-weight:500}
+.tier b{display:block;font-size:28px;color:var(--txt);margin:6px 0 2px}
+.tier small{color:var(--dim)}
+.tier ul{list-style:none;margin-top:14px}
+.tier li{font-size:14px;color:var(--dim);padding:4px 0}
+.tier li::before{content:"— ";color:var(--acc)}
+.note{background:var(--panel);border-left:3px solid var(--acc);border-radius:8px;padding:16px 20px;color:var(--dim);font-size:14.5px;margin-top:26px}
+.note b{color:var(--txt)}
+footer{border-top:1px solid var(--line);padding:30px 0 50px;color:var(--dim);font-size:13px}
+footer a{color:var(--dim)}
+.mail{color:var(--acc);text-decoration:none;font-weight:600}
+@media(max-width:600px){.cta2{margin:10px 0 0}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="logo">LEAD<span>MACHINE</span> FL</div></div></header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Distressed-property leads, pulled from county records <em>every day</em>.</h1>
+    <p>We monitor official Florida county data sources daily for early distress signals — open code-violation cases and absentee ownership verified against the Property Appraiser — score every property, and deliver clean, deduplicated lead data. Data only: you own the outreach, your process, your compliance.</p>
+    <a class="cta" href="mailto:leadmachine@agentmail.to?subject=Free%20sample%20request%20%E2%80%94%2010%20leads&body=Hi%2C%20I%27d%20like%20the%20free%2010-lead%20sample.%20My%20target%20counties%2FZIPs%3A%20">Get 10 free leads</a>
+    <a class="cta2" href="#" onclick="var t=prompt('Enter your private access code:');if(t)location.href='/feed.html?t='+encodeURIComponent(t.trim());return false;">Have an access code?</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>930+</b><i>Active leads</i></div>
+    <div class="stat"><b>4</b><i>FL counties</i></div>
+    <div class="stat"><b>Daily</b><i>Harvest cadence</i></div>
+    <div class="stat"><b>46%</b><i>Absentee-flagged (Dade)</i></div>
+  </div>
+
+  <section>
+    <h2>How it works</h2>
+    <p class="sub">No recycled lists. Every lead starts as a government record and carries its harvest date.</p>
+    <div class="grid">
+      <div class="card"><div class="n">01</div><h3>Harvest</h3><p>Automated daily pulls from county open-data systems: Miami-Dade, Lee (Cape Coral), Orange (Orlando), Broward (Deerfield Beach). More counties added continuously.</p></div>
+      <div class="card"><div class="n">02</div><h3>Score &amp; enrich</h3><p>Each property is cross-referenced with the Property Appraiser: owner name, ZIP, and absentee status (owner's mailing address differs from the property). Stacked signals raise the score.</p></div>
+      <div class="card"><div class="n">03</div><h3>You close</h3><p>Delivered as CSV, a private live feed, or straight to your CRM — filtered to your counties, ZIPs, and minimum score. Exclusive or shared, your call.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What a lead looks like</h2>
+    <p class="sub">Live rows from this week's Miami-Dade harvest (details masked — the free sample has them in full).</p>
+    <div class="twrap">
+    <table>
+      <thead><tr><th>Address</th><th>Owner</th><th>ZIP</th><th>Signals</th><th>Score</th><th>Harvested</th></tr></thead>
+      <tbody>
+        <tr><td>144•• SW 164 TER</td><td class="blur">H███ F███████</td><td>33177</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="score">30</td><td>Aug 11</td></tr>
+        <tr><td>65•• SW 164 CT</td><td class="blur">E███ &amp; P███ R█████</td><td>33193</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="score">30</td><td>Aug 11</td></tr>
+        <tr><td>83•• SW 39 ST</td><td class="blur">R███ V███ A███</td><td>33155</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="score">30</td><td>Aug 11</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note"><b>Why these convert:</b> an absentee owner (doesn't live in the property) with an open county code-violation case is the classic motivated-seller profile — the county is already applying pressure, and the owner has no day-to-day attachment to the asset.</div>
+  </section>
+
+  <section>
+    <h2>Pricing</h2>
+    <p class="sub">Per lead, by signal depth. First batch for new buyers is risk-free — pay only for what proves out.</p>
+    <div class="price">
+      <div class="tier"><h3>Single signal</h3><b>$10–20</b><small>per lead</small><ul><li>One verified distress signal</li><li>Address + county record ref</li><li>Owner where available</li></ul></div>
+      <div class="tier hot"><h3>Cross-verified</h3><b>$25–40</b><small>per lead</small><ul><li>Code violation + absentee owner</li><li>Owner name + ZIP verified vs PA</li><li>The current inventory sweet spot</li></ul></div>
+      <div class="tier"><h3>Stacked signals</h3><b>$50–120</b><small>per lead</small><ul><li>3+ signals (tax, probate, liens)</li><li>Exclusive delivery available</li><li>Rolling out as sources expand</li></ul></div>
+    </div>
+    <div class="note"><b>Exclusive vs shared:</b> exclusive leads go to one buyer only and are priced at a premium. Shared batches are cheaper. Phone-verified tiers arrive with skip-trace enrichment.</div>
+  </section>
+
+  <section>
+    <h2>Get the free sample</h2>
+    <p class="sub">10 scored, cross-verified Miami-Dade leads — full addresses, owner names, ZIPs. No commitment, no card. Tell us your target counties or ZIPs and we'll pull the sample from this week's harvest.</p>
+    <a class="cta" href="mailto:leadmachine@agentmail.to?subject=Free%20sample%20request%20%E2%80%94%2010%20leads&body=Hi%2C%20I%27d%20like%20the%20free%2010-lead%20sample.%20My%20target%20counties%2FZIPs%3A%20">Email us — leadmachine@agentmail.to</a>
+  </section>
+</div>
+
+<footer><div class="wrap">
+  LeadMachine FL · Property data compiled from public county records. We sell data only — no consumer contact is made or implied, and all homeowner outreach and its compliance (incl. TCPA) is the buyer's responsibility. · <a href="mailto:leadmachine@agentmail.to">leadmachine@agentmail.to</a>
+</div></footer>
+</body>
+</html>

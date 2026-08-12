@@ -5,59 +5,93 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Private Feed — LeadMachine FL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0b0d10;--panel:#14181d;--line:#232a31;--txt:#e8ebee;--dim:#8a94a0;--acc:#d4af37}
+:root{
+  --bg:#0B0C10; --card:#16181D; --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+  --ink:#FFFFFF; --dim:#94A3B8; --dim2:#64748B;
+  --grad:linear-gradient(120deg,#818CF8 0%,#22D3EE 100%);
+  --grad-btn:linear-gradient(120deg,#6366F1 0%,#06B6D4 100%);
+  --good:#34D399;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.wrap{max-width:960px;margin:0 auto;padding:0 22px 60px}
-header{padding:24px 0;border-bottom:1px solid var(--line);margin-bottom:30px}
-.logo{font-size:18px;letter-spacing:4px;font-weight:600}
-.logo span{color:var(--acc)}
-h1{font-size:24px;margin-bottom:4px}
-.sub{color:var(--dim);margin-bottom:24px}
-table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--panel);border:1px solid var(--line)}
-th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;font-weight:500}
-tr:last-child td{border-bottom:none}
-.tag{display:inline-block;background:#0e1114;border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:11px;color:var(--dim);margin-right:3px}
-.score{color:var(--acc);font-weight:700}
-.twrap{overflow-x:auto;border-radius:10px;border:1px solid var(--line)}
-.btn{display:inline-block;background:var(--acc);color:#0b0d10;font-weight:700;padding:11px 22px;border-radius:8px;text-decoration:none;font-size:14px;margin:20px 12px 0 0}
-.btn2{display:inline-block;color:var(--txt);border:1px solid var(--line);padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13.5px;margin-top:20px}
-.err{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:30px;text-align:center;color:var(--dim)}
-.meta{color:var(--dim);font-size:12.5px;margin-top:18px}
-.meta code{background:var(--panel);padding:2px 7px;border-radius:5px;font-size:12px}
+body{background:var(--bg);color:var(--ink);
+  font:15px/1.6 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.glow{position:fixed;border-radius:50%;filter:blur(120px);opacity:.4;z-index:0;pointer-events:none}
+.glow.a{width:560px;height:560px;background:radial-gradient(circle,rgba(99,102,241,.5),transparent 70%);top:-200px;left:-140px}
+.glow.b{width:480px;height:480px;background:radial-gradient(circle,rgba(6,182,212,.4),transparent 70%);top:80px;right:-180px}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px 70px;position:relative;z-index:1}
+nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:rgba(11,12,16,.6);border-bottom:1px solid var(--line)}
+nav .r{max-width:1000px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:800;letter-spacing:.5px;font-size:16px;display:flex;align-items:center;gap:9px}
+.brand .dot{width:10px;height:10px;border-radius:3px;background:var(--grad-btn);box-shadow:0 0 14px rgba(99,102,241,.8)}
+.brand b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tag{font-size:11px;color:var(--dim2);font-weight:600;letter-spacing:1.5px;margin-left:6px}
+#app{padding-top:38px}
+.err{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:44px 30px;text-align:center;color:var(--dim);max-width:520px;margin:60px auto}
+.err a{color:#22D3EE}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+h1{font-size:clamp(24px,3.5vw,34px);font-weight:800;letter-spacing:-.8px}
+h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.badge{font-size:12px;color:var(--good);display:flex;align-items:center;gap:7px;border:1px solid var(--line2);
+  padding:7px 14px;border-radius:999px;background:rgba(52,211,153,.08)}
+.badge .pip{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good)}
+.sub{color:var(--dim);margin:6px 0 26px;font-size:15px}
+.tbl-card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:13px 20px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{font-size:11px;color:var(--dim2);text-transform:uppercase;letter-spacing:1.2px;font-weight:600}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+.tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:999px;border:1px solid var(--line2);
+  background:rgba(6,182,212,.10);color:#67E8F9;margin-right:4px}
+.sc{font-weight:800;color:#22D3EE;font-variant-numeric:tabular-nums}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.btn{font-weight:700;font-size:14px;padding:13px 24px;border-radius:999px;cursor:pointer;border:none;transition:transform .18s,border-color .18s}
+.btn.solid{background:var(--grad-btn);color:#fff;box-shadow:0 6px 24px rgba(99,102,241,.35)}
+.btn.solid:hover{transform:translateY(-2px)}
+.btn.outline{border:1px solid var(--line2);color:var(--ink);background:rgba(255,255,255,.02)}
+.btn.outline:hover{border-color:rgba(255,255,255,.35)}
+.meta{color:var(--dim2);font-size:12.5px;margin-top:22px;line-height:1.7}
+.meta code{background:var(--card);border:1px solid var(--line);padding:3px 8px;border-radius:6px;font-size:12px;color:var(--dim)}
+.meta a{color:#22D3EE}
 </style>
 </head>
 <body>
-<header><div class="wrap" style="padding-bottom:0"><div class="logo">LEAD<span>MACHINE</span> FL — PRIVATE FEED</div></div></header>
-<div class="wrap">
-  <div id="app"><div class="err">Loading feed…</div></div>
-</div>
+<div class="glow a"></div><div class="glow b"></div>
+<nav><div class="r">
+  <div class="brand"><span class="dot"></span>LEAD<b>MACHINE</b> FL<span class="tag">PRIVATE FEED</span></div>
+</div></nav>
+<div class="wrap"><div id="app"><div class="err">Loading your feed…</div></div></div>
 <script>
 const t = new URLSearchParams(location.search).get("t");
 const app = document.getElementById("app");
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 if (!t || !/^[a-f0-9]{12}$/.test(t)) {
-  app.innerHTML = '<div class="err">Missing or invalid access code. Check the link in your email, or contact <a style="color:var(--acc)" href="mailto:leadmachine@agentmail.to">leadmachine@agentmail.to</a>.</div>';
+  app.innerHTML = '<div class="err">Missing or invalid access code. Check the link in your email, or contact <a href="mailto:leadmachine@agentmail.to">leadmachine@agentmail.to</a>.</div>';
 } else {
   fetch("/feed/" + t + ".json").then(r => { if (!r.ok) throw 0; return r.json(); }).then(d => {
     const rows = d.leads.map(l =>
-      "<tr><td>"+esc(l.address)+"</td><td>"+esc(l.owner)+"</td><td>"+esc(l.city)+"</td><td>"+esc(l.zip)+"</td><td>"+l.signals.map(s=>'<span class="tag">'+esc(s)+"</span>").join("")+'</td><td class="score">'+l.score+"</td><td>"+esc(l.harvested)+"</td></tr>").join("");
+      "<tr><td>"+esc(l.address)+"</td><td>"+esc(l.owner)+"</td><td>"+esc(l.city)+"</td><td>"+esc(l.zip)+"</td><td>"+l.signals.map(s=>'<span class="tag">'+esc(s)+"</span>").join("")+'</td><td class="sc">'+l.score+"</td><td>"+esc(l.harvested)+"</td></tr>").join("");
     const csv = "address,owner,city,county,state,zip,score,signals,harvested\n" + d.leads.map(l =>
       [l.address,l.owner,l.city,d.county,"FL",l.zip,l.score,l.signals.join("|"),l.harvested].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
     app.innerHTML =
-      "<h1>Prepared for " + esc(d.prepared_for) + "</h1>" +
+      '<div class="head"><h1>Prepared for <span>' + esc(d.prepared_for) + '</span></h1>' +
+      '<span class="badge"><span class="pip"></span>Live feed</span></div>' +
       '<div class="sub">' + d.leads.length + " scored leads · " + esc(d.county) + " County, FL · generated " + esc(d.generated) + "</div>" +
-      '<div class="twrap"><table><thead><tr><th>Address</th><th>Owner</th><th>City</th><th>ZIP</th><th>Signals</th><th>Score</th><th>Harvested</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
-      '<a class="btn" id="dl">Download CSV</a>' +
-      '<a class="btn2" href="mailto:leadmachine@agentmail.to?subject=Full%20batch%20request%20(' + encodeURIComponent(d.prepared_for) + ')&body=Ready%20for%20the%20full%20batch.%20My%20target%20ZIPs%3A%20">Request the full county batch →</a>' +
-      '<div class="meta">Programmatic access: <code>GET ' + location.origin + "/feed/" + t + '.json</code> — refreshed with each batch. Keep this link private. Use of this data is subject to the <a href="/terms.html" style="color:var(--acc)">Data License &amp; Terms</a>.</div>';
+      '<div class="tbl-card"><div class="twrap"><table><thead><tr><th>Address</th><th>Owner</th><th>City</th><th>ZIP</th><th>Signals</th><th>Score</th><th>Harvested</th></tr></thead><tbody>' + rows + "</tbody></table></div></div>" +
+      '<div class="actions"><a class="btn solid" id="dl">Download CSV</a>' +
+      '<a class="btn outline" href="mailto:leadmachine@agentmail.to?subject=Full%20batch%20request%20(' + encodeURIComponent(d.prepared_for) + ')&body=Ready%20for%20the%20full%20batch.%20My%20target%20ZIPs%3A%20">Request the full county batch →</a></div>' +
+      '<div class="meta">Programmatic access: <code>GET ' + location.origin + "/feed/" + t + '.json</code> — refreshed with each batch. Keep this link private. Use of this data is subject to the <a href="/terms.html">Data License &amp; Terms</a>.</div>';
     const a = document.getElementById("dl");
     a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
     a.download = "leadmachine_" + d.county.toLowerCase().replace(/[^a-z]/g,"") + "_sample.csv";
   }).catch(() => {
-    app.innerHTML = '<div class="err">Feed not found for this code. Contact <a style="color:var(--acc)" href="mailto:leadmachine@agentmail.to">leadmachine@agentmail.to</a>.</div>';
+    app.innerHTML = '<div class="err">Feed not found for this code. Contact <a href="mailto:leadmachine@agentmail.to">leadmachine@agentmail.to</a>.</div>';
   });
 }
 </script>

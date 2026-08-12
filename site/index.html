@@ -3,124 +3,292 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LeadMachine FL — Distressed-Property Leads from County Records</title>
-<meta name="description" content="Daily-harvested, signal-scored distressed-property leads from Florida county records. Data only — you own the outreach." />
+<title>LeadMachine FL — Distressed-Property Intelligence at Scale</title>
+<meta name="description" content="Distressed-property leads harvested from Florida county records every day, scored and owner-verified. Data only — you own the outreach." />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0b0d10;--panel:#14181d;--line:#232a31;--txt:#e8ebee;--dim:#8a94a0;--acc:#d4af37;--ok:#3ecf8e}
+:root{
+  --bg:#0B0C10; --bg2:#08090A;
+  --card:#16181D; --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+  --ink:#FFFFFF; --dim:#94A3B8; --dim2:#64748B;
+  --i1:#6366F1; --i2:#06B6D4; --violet:#7F00FF; --cyan:#00F2FE;
+  --good:#34D399;
+  --grad:linear-gradient(120deg,#818CF8 0%,#22D3EE 100%);
+  --grad-btn:linear-gradient(120deg,#6366F1 0%,#06B6D4 100%);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font:16px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.wrap{max-width:960px;margin:0 auto;padding:0 22px}
-header{padding:26px 0;border-bottom:1px solid var(--line)}
-.logo{font-size:19px;letter-spacing:4px;font-weight:600}
-.logo span{color:var(--acc)}
-.hero{padding:72px 0 56px}
-.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.15;font-weight:700;letter-spacing:-.5px;max-width:17ch}
-.hero h1 em{color:var(--acc);font-style:normal}
-.hero p{color:var(--dim);max-width:58ch;margin:18px 0 30px;font-size:17px}
-.cta{display:inline-block;background:var(--acc);color:#0b0d10;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:16px}
-.cta:hover{filter:brightness(1.1)}
-.cta2{display:inline-block;color:var(--txt);border:1px solid var(--line);padding:13px 22px;border-radius:8px;text-decoration:none;margin-left:10px;font-size:15px}
-.cta2:hover{border-color:var(--acc)}
-.stats{display:flex;gap:38px;flex-wrap:wrap;padding:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.stat b{display:block;font-size:30px;color:var(--acc);font-weight:700}
-.stat i{font-style:normal;font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px}
-section{padding:56px 0}
-h2{font-size:24px;margin-bottom:8px;letter-spacing:-.3px}
-.sub{color:var(--dim);margin-bottom:28px;max-width:62ch}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
-.card .n{color:var(--acc);font-weight:700;font-size:13px;letter-spacing:2px}
-.card h3{font-size:17px;margin:8px 0 6px}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);
+  font:16px/1.65 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+a{color:inherit;text-decoration:none}
+.glow{position:fixed;border-radius:50%;filter:blur(120px);opacity:.5;z-index:0;pointer-events:none}
+.glow.a{width:620px;height:620px;background:radial-gradient(circle,rgba(99,102,241,.55),transparent 70%);top:-220px;left:-160px}
+.glow.b{width:540px;height:540px;background:radial-gradient(circle,rgba(6,182,212,.45),transparent 70%);top:120px;right:-200px}
+.glow.c{width:480px;height:480px;background:radial-gradient(circle,rgba(127,0,255,.28),transparent 70%);top:1200px;left:40%}
+main,header,footer{position:relative;z-index:1}
+nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);
+  background:rgba(11,12,16,.6);border-bottom:1px solid var(--line)}
+nav .row{display:flex;align-items:center;justify-content:space-between;height:66px}
+.brand{font-weight:800;letter-spacing:.5px;font-size:17px;display:flex;align-items:center;gap:9px}
+.brand .dot{width:11px;height:11px;border-radius:3px;background:var(--grad-btn);box-shadow:0 0 14px rgba(99,102,241,.8)}
+.brand b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nlinks{display:flex;gap:30px;font-size:14.5px;color:var(--dim)}
+.nlinks a:hover{color:var(--ink)}
+.nav-cta{font-size:14px;font-weight:700;padding:9px 18px;border-radius:999px;background:var(--grad-btn);
+  box-shadow:0 4px 20px rgba(6,182,212,.32)}
+@media(max-width:760px){.nlinks{display:none}}
+.hero{padding:96px 0 40px;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#C7D2FE;
+  padding:7px 16px;border-radius:999px;border:1px solid var(--line2);
+  background:rgba(99,102,241,.10);backdrop-filter:blur(6px);margin-bottom:26px}
+.badge .pip{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 10px var(--good)}
+h1{font-size:clamp(38px,6.4vw,68px);line-height:1.04;font-weight:800;letter-spacing:-1.5px;
+  max-width:16ch;margin:0 auto;text-wrap:balance}
+h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{color:var(--dim);font-size:clamp(16px,2vw,20px);max-width:58ch;margin:22px auto 34px;text-wrap:balance}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-primary{position:relative;font-weight:700;font-size:15.5px;padding:15px 30px;border-radius:999px;
+  color:#fff;background:var(--grad-btn);box-shadow:0 8px 30px rgba(99,102,241,.4);transition:transform .18s,box-shadow .18s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(6,182,212,.5)}
+.btn-ghost{font-weight:600;font-size:15.5px;padding:15px 26px;border-radius:999px;color:var(--ink);
+  border:1px solid var(--line2);background:rgba(255,255,255,.02);transition:border-color .18s,background .18s;cursor:pointer}
+.btn-ghost:hover{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.05)}
+.dash-wrap{margin:64px auto 0;max-width:940px;perspective:1600px}
+.dash{position:relative;border-radius:18px;border:1px solid var(--line2);overflow:hidden;
+  background:linear-gradient(180deg,rgba(22,24,29,.9),rgba(11,12,16,.9));
+  box-shadow:0 40px 120px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03);
+  transform:rotateX(6deg);transform-origin:center top}
+.dash::before{content:"";position:absolute;inset:0;border-radius:18px;padding:1px;
+  background:linear-gradient(120deg,rgba(99,102,241,.6),transparent 40%,transparent 60%,rgba(6,182,212,.6));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.dash-top{display:flex;align-items:center;gap:7px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.dot3{width:11px;height:11px;border-radius:50%;background:#2a2d35}
+.dash-top .t{margin-left:12px;font-size:12.5px;color:var(--dim2);letter-spacing:.3px}
+.dash-body{padding:22px;display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+.metric-row{grid-column:1/3;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:2px}
+.metric{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:12px;padding:14px 15px;text-align:left}
+.metric .k{font-size:11px;color:var(--dim2);text-transform:uppercase;letter-spacing:1px}
+.metric .v{font-size:24px;font-weight:800;margin-top:4px;letter-spacing:-.5px}
+.metric .v.g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.metric .d{font-size:11.5px;color:var(--good);margin-top:2px}
+.panel{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:left}
+.panel h4{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:14px}
+svg.spark{width:100%;height:118px;display:block}
+.leadmini{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.leadmini:last-child{border-bottom:none}
+.leadmini .addr{color:var(--dim)}
+.leadmini .sc{font-weight:800;color:#22D3EE;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:999px;background:rgba(6,182,212,.14);color:#67E8F9;margin-left:6px}
+@media(max-width:680px){.dash-body{grid-template-columns:1fr}.metric-row{grid-template-columns:repeat(2,1fr)}.dash{transform:none}}
+.proof{padding:52px 0 20px;text-align:center}
+.proof p{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--dim2);margin-bottom:20px}
+.sources{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.src{font-size:13.5px;color:var(--dim);padding:8px 16px;border:1px solid var(--line);border-radius:999px;
+  background:rgba(255,255,255,.02);transition:color .2s,border-color .2s}
+.src:hover{color:var(--ink);border-color:var(--line2)}
+section{padding:80px 0}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;text-align:center}
+h2{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-1px;text-align:center;margin:10px auto 0;max-width:20ch;text-wrap:balance}
+.section-sub{color:var(--dim);text-align:center;max-width:56ch;margin:16px auto 0;font-size:16.5px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;overflow:hidden;
+  transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-4px);border-color:var(--line2)}
+.card .ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:rgba(99,102,241,.12);border:1px solid var(--line2);margin-bottom:18px}
+.card .ic svg{width:22px;height:22px;stroke:#A5B4FC;fill:none;stroke-width:1.8}
+.card .num{position:absolute;top:20px;right:24px;font-size:13px;font-weight:800;color:var(--dim2)}
+.card h3{font-size:19px;font-weight:700;margin-bottom:8px;letter-spacing:-.3px}
 .card p{color:var(--dim);font-size:14.5px}
-table{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;font-weight:500}
-tr:last-child td{border-bottom:none}
-.tag{display:inline-block;background:#0e1114;border:1px solid var(--line);border-radius:4px;padding:1px 7px;font-size:11.5px;color:var(--dim);margin-right:3px}
-.score{color:var(--acc);font-weight:700}
-.blur{color:var(--dim);letter-spacing:1px}
-.twrap{overflow-x:auto;border-radius:12px}
-.price{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.tier{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px}
-.tier.hot{border-color:var(--acc)}
-.tier h3{font-size:15px;color:var(--dim);font-weight:500}
-.tier b{display:block;font-size:28px;color:var(--txt);margin:6px 0 2px}
-.tier small{color:var(--dim)}
-.tier ul{list-style:none;margin-top:14px}
-.tier li{font-size:14px;color:var(--dim);padding:4px 0}
-.tier li::before{content:"— ";color:var(--acc)}
-.note{background:var(--panel);border-left:3px solid var(--acc);border-radius:8px;padding:16px 20px;color:var(--dim);font-size:14.5px;margin-top:26px}
-.note b{color:var(--txt)}
-footer{border-top:1px solid var(--line);padding:30px 0 50px;color:var(--dim);font-size:13px}
-footer a{color:var(--dim)}
-.mail{color:var(--acc);text-decoration:none;font-weight:600}
-@media(max-width:600px){.cta2{margin:10px 0 0}}
+@media(max-width:820px){.cards{grid-template-columns:1fr}}
+.sample{margin-top:48px;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.sample .sh{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.sample .sh .t{font-weight:700;font-size:15px}
+.sample .sh .live{font-size:12px;color:var(--good);display:flex;align-items:center;gap:7px}
+.sample .sh .live .pip{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good)}
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:13px 24px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{font-size:11px;color:var(--dim2);text-transform:uppercase;letter-spacing:1.2px;font-weight:600}
+tbody tr:last-child td{border-bottom:none}
+td .blur{color:var(--dim2);letter-spacing:1px}
+.tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:999px;border:1px solid var(--line2);
+  background:rgba(6,182,212,.10);color:#67E8F9;margin-right:4px}
+.sc{font-weight:800;color:#22D3EE;font-variant-numeric:tabular-nums}
+.sample .note{padding:16px 24px;color:var(--dim);font-size:13.5px;background:rgba(99,102,241,.05);border-top:1px solid var(--line)}
+.sample .note b{color:var(--ink)}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px}
+.tier{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px;transition:transform .2s}
+.tier:hover{transform:translateY(-4px)}
+.tier.feat{border-color:transparent;background:linear-gradient(var(--card),var(--card)) padding-box,var(--grad-btn) border-box;border:1.5px solid transparent}
+.tier .fl{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;letter-spacing:.5px;
+  padding:4px 14px;border-radius:999px;background:var(--grad-btn);box-shadow:0 4px 16px rgba(6,182,212,.4)}
+.tier .tn{font-size:14px;color:var(--dim);font-weight:600}
+.tier .pr{font-size:40px;font-weight:800;letter-spacing:-1.5px;margin:8px 0 2px}
+.tier .pr span{font-size:15px;color:var(--dim2);font-weight:600}
+.tier ul{list-style:none;margin:20px 0 26px;display:flex;flex-direction:column;gap:11px}
+.tier li{font-size:14px;color:var(--dim);display:flex;gap:10px;align-items:flex-start}
+.tier li svg{width:17px;height:17px;stroke:#22D3EE;fill:none;stroke-width:2.4;flex:none;margin-top:2px}
+.tier .buy{display:block;text-align:center;font-weight:700;font-size:14.5px;padding:13px;border-radius:999px}
+.tier .buy.solid{background:var(--grad-btn);color:#fff;box-shadow:0 6px 24px rgba(99,102,241,.35)}
+.tier .buy.outline{border:1px solid var(--line2);color:var(--ink)}
+.tier .buy:hover{opacity:.92}
+@media(max-width:820px){.tiers{grid-template-columns:1fr}}
+.final{margin:20px 0 90px;text-align:center;position:relative;border:1px solid var(--line2);border-radius:24px;
+  padding:64px 30px;overflow:hidden;background:linear-gradient(180deg,rgba(22,24,29,.7),rgba(11,12,16,.7))}
+.final::before{content:"";position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:700px;height:400px;
+  background:radial-gradient(circle,rgba(99,102,241,.35),transparent 65%);filter:blur(40px);z-index:0}
+.final>*{position:relative;z-index:1}
+.final h2{margin-bottom:14px}
+.final .lede{margin:0 auto 30px}
+footer{border-top:1px solid var(--line);padding:34px 0 60px;color:var(--dim2);font-size:13px}
+footer .frow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer a{color:var(--dim)}footer a:hover{color:var(--ink)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><div class="logo">LEAD<span>MACHINE</span> FL</div></div></header>
-
-<div class="wrap">
-  <div class="hero">
-    <h1>Distressed-property leads, pulled from county records <em>every day</em>.</h1>
-    <p>We monitor official Florida county data sources daily for early distress signals — open code-violation cases and absentee ownership verified against the Property Appraiser — score every property, and deliver clean, deduplicated lead data. Data only: you own the outreach, your process, your compliance.</p>
-    <a class="cta" href="mailto:leadmachine@agentmail.to?subject=Free%20sample%20request%20%E2%80%94%2010%20leads&body=Hi%2C%20I%27d%20like%20the%20free%2010-lead%20sample.%20My%20target%20counties%2FZIPs%3A%20">Get 10 free leads</a>
-    <a class="cta2" href="#" onclick="var t=prompt('Enter your private access code:');if(t)location.href='/feed.html?t='+encodeURIComponent(t.trim());return false;">Have an access code?</a>
+<div class="glow a"></div><div class="glow b"></div><div class="glow c"></div>
+<nav><div class="wrap row">
+  <div class="brand"><span class="dot"></span>LEAD<b>MACHINE</b>&nbsp;FL</div>
+  <div class="nlinks"><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#pricing">Pricing</a><a href="/terms.html">Terms</a></div>
+  <a class="nav-cta" href="mailto:leadmachine@agentmail.to?subject=Free%20sample%20request%20%E2%80%94%2010%20leads&body=Hi%2C%20I%27d%20like%20the%20free%2010-lead%20sample.%20My%20target%20counties%2FZIPs%3A%20">Get free leads</a>
+</div></nav>
+<main>
+<header class="hero"><div class="wrap">
+  <div class="badge"><span class="pip"></span>Harvesting 4 Florida counties — live today</div>
+  <h1>Distressed-property <em>intelligence</em>, at scale.</h1>
+  <p class="lede">We pull distress signals from Florida county records every day — open code-violation cases and absentee ownership, verified against the Property Appraiser — score every property, and hand you clean data. You own the outreach.</p>
+  <div class="cta-row">
+    <a class="btn-primary" href="mailto:leadmachine@agentmail.to?subject=Free%20sample%20request%20%E2%80%94%2010%20leads&body=Hi%2C%20I%27d%20like%20the%20free%2010-lead%20sample.%20My%20target%20counties%2FZIPs%3A%20">Get 10 free leads</a>
+    <button class="btn-ghost" onclick="var t=prompt('Enter your private access code:');if(t)location.href='/feed.html?t='+encodeURIComponent(t.trim());">Access my feed →</button>
   </div>
-
-  <div class="stats">
-    <div class="stat"><b>930+</b><i>Active leads</i></div>
-    <div class="stat"><b>4</b><i>FL counties</i></div>
-    <div class="stat"><b>Daily</b><i>Harvest cadence</i></div>
-    <div class="stat"><b>46%</b><i>Absentee-flagged (Dade)</i></div>
-  </div>
-
-  <section>
-    <h2>How it works</h2>
-    <p class="sub">No recycled lists. Every lead starts as a government record and carries its harvest date.</p>
-    <div class="grid">
-      <div class="card"><div class="n">01</div><h3>Harvest</h3><p>Automated daily pulls from county open-data systems: Miami-Dade, Lee (Cape Coral), Orange (Orlando), Broward (Deerfield Beach). More counties added continuously.</p></div>
-      <div class="card"><div class="n">02</div><h3>Score &amp; enrich</h3><p>Each property is cross-referenced with the Property Appraiser: owner name, ZIP, and absentee status (owner's mailing address differs from the property). Stacked signals raise the score.</p></div>
-      <div class="card"><div class="n">03</div><h3>You close</h3><p>Delivered as CSV, a private live feed, or straight to your CRM — filtered to your counties, ZIPs, and minimum score. Exclusive or shared, your call.</p></div>
+  <div class="dash-wrap"><div class="dash">
+    <div class="dash-top"><span class="dot3"></span><span class="dot3"></span><span class="dot3"></span><span class="t">leadmachine · Miami-Dade pipeline · live</span></div>
+    <div class="dash-body">
+      <div class="metric-row">
+        <div class="metric"><div class="k">Active leads</div><div class="v g">930</div><div class="d">▲ harvested daily</div></div>
+        <div class="metric"><div class="k">Cross-verified</div><div class="v">170</div><div class="d">▲ score 30</div></div>
+        <div class="metric"><div class="k">Counties</div><div class="v">4</div><div class="d">▲ expanding</div></div>
+        <div class="metric"><div class="k">Absentee</div><div class="v">46%</div><div class="d">▲ owner off-site</div></div>
+      </div>
+      <div class="panel"><h4>Leads harvested · last 7 days</h4>
+        <svg class="spark" viewBox="0 0 320 118" preserveAspectRatio="none">
+          <defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#22D3EE" stop-opacity=".35"/><stop offset="1" stop-color="#22D3EE" stop-opacity="0"/></linearGradient>
+            <linearGradient id="ln" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6366F1"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
+          <path d="M0,92 L46,74 L92,80 L138,50 L184,58 L230,30 L276,40 L320,18 L320,118 L0,118 Z" fill="url(#fill)"/>
+          <path d="M0,92 L46,74 L92,80 L138,50 L184,58 L230,30 L276,40 L320,18" fill="none" stroke="url(#ln)" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="320" cy="18" r="4.5" fill="#22D3EE"/><circle cx="320" cy="18" r="8" fill="#22D3EE" opacity=".25"/>
+        </svg>
+      </div>
+      <div class="panel"><h4>Top scored — this week</h4>
+        <div class="leadmini"><span class="addr">144•• SW 164 TER<span class="pill">absentee</span></span><span class="sc">30</span></div>
+        <div class="leadmini"><span class="addr">65•• SW 164 CT<span class="pill">absentee</span></span><span class="sc">30</span></div>
+        <div class="leadmini"><span class="addr">83•• SW 39 ST<span class="pill">absentee</span></span><span class="sc">30</span></div>
+        <div class="leadmini"><span class="addr">15•• MIAMI GARDENS DR<span class="pill">absentee</span></span><span class="sc">30</span></div>
+      </div>
     </div>
-  </section>
-
-  <section>
-    <h2>What a lead looks like</h2>
-    <p class="sub">Live rows from this week's Miami-Dade harvest (details masked — the free sample has them in full).</p>
-    <div class="twrap">
-    <table>
+  </div></div>
+</div></header>
+<div class="proof"><div class="wrap">
+  <p>Sourced from official government systems</p>
+  <div class="sources">
+    <span class="src">Miami-Dade County</span><span class="src">Lee County</span>
+    <span class="src">Orange County</span><span class="src">Broward County</span>
+    <span class="src">Property Appraiser</span>
+  </div>
+</div></div>
+<section id="how"><div class="wrap">
+  <div class="eyebrow">The pipeline</div>
+  <h2>From public record to closable lead</h2>
+  <p class="section-sub">No recycled lists. Every lead starts as a government record and carries its harvest date.</p>
+  <div class="cards">
+    <div class="card"><span class="num">01</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+      <h3>Harvest daily</h3>
+      <p>Automated pulls from county open-data systems every morning — Miami-Dade, Lee, Orange and Broward, with new counties added continuously.</p></div>
+    <div class="card"><span class="num">02</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4.5-3 7-7 9-4-2-7-4.5-7-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <h3>Score &amp; verify</h3>
+      <p>Each property is cross-referenced with the Property Appraiser for owner, ZIP and absentee status. Stacked signals raise the score.</p></div>
+    <div class="card"><span class="num">03</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div>
+      <h3>You close</h3>
+      <p>Delivered as CSV, a private live feed, or straight to your CRM — filtered to your counties, ZIPs and minimum score. Exclusive or shared.</p></div>
+  </div>
+</div></section>
+<section id="sample" style="padding-top:0"><div class="wrap">
+  <div class="eyebrow">Live inventory</div>
+  <h2>What a lead looks like</h2>
+  <p class="section-sub">Real rows from this week's Miami-Dade harvest. Details masked here — the free sample has them in full.</p>
+  <div class="sample">
+    <div class="sh"><span class="t">Miami-Dade · cross-verified</span><span class="live"><span class="pip"></span>Updated Aug 11</span></div>
+    <div class="twrap"><table>
       <thead><tr><th>Address</th><th>Owner</th><th>ZIP</th><th>Signals</th><th>Score</th><th>Harvested</th></tr></thead>
       <tbody>
-        <tr><td>144•• SW 164 TER</td><td class="blur">H███ F███████</td><td>33177</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="score">30</td><td>Aug 11</td></tr>
-        <tr><td>65•• SW 164 CT</td><td class="blur">E███ &amp; P███ R█████</td><td>33193</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="score">30</td><td>Aug 11</td></tr>
-        <tr><td>83•• SW 39 ST</td><td class="blur">R███ V███ A███</td><td>33155</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="score">30</td><td>Aug 11</td></tr>
+        <tr><td>144•• SW 164 TER</td><td class="blur">H███ F███████</td><td>33177</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="sc">30</td><td>Aug 11</td></tr>
+        <tr><td>65•• SW 164 CT</td><td class="blur">E███ &amp; P███ R█████</td><td>33193</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="sc">30</td><td>Aug 11</td></tr>
+        <tr><td>83•• SW 39 ST</td><td class="blur">R███ V███ A███</td><td>33155</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="sc">30</td><td>Aug 11</td></tr>
+        <tr><td>15•• MIAMI GARDENS DR</td><td class="blur">L███ G█████</td><td>33179</td><td><span class="tag">code_violation</span><span class="tag">absentee</span></td><td class="sc">30</td><td>Aug 11</td></tr>
       </tbody>
-    </table>
-    </div>
+    </table></div>
     <div class="note"><b>Why these convert:</b> an absentee owner (doesn't live in the property) with an open county code-violation case is the classic motivated-seller profile — the county is already applying pressure, and the owner has no day-to-day attachment to the asset.</div>
-  </section>
-
-  <section>
-    <h2>Pricing</h2>
-    <p class="sub">Per lead, by signal depth. First batch for new buyers is risk-free — pay only for what proves out.</p>
-    <div class="price">
-      <div class="tier"><h3>Single signal</h3><b>$10–20</b><small>per lead</small><ul><li>One verified distress signal</li><li>Address + county record ref</li><li>Owner where available</li></ul></div>
-      <div class="tier hot"><h3>Cross-verified</h3><b>$25–40</b><small>per lead</small><ul><li>Code violation + absentee owner</li><li>Owner name + ZIP verified vs PA</li><li>The current inventory sweet spot</li></ul></div>
-      <div class="tier"><h3>Stacked signals</h3><b>$50–120</b><small>per lead</small><ul><li>3+ signals (tax, probate, liens)</li><li>Exclusive delivery available</li><li>Rolling out as sources expand</li></ul></div>
+  </div>
+</div></section>
+<section id="pricing" style="padding-top:0"><div class="wrap">
+  <div class="eyebrow">Pricing</div>
+  <h2>Pay per lead, by signal depth</h2>
+  <p class="section-sub">Choose your quantity at checkout. First batch for new buyers is low-risk — start small and scale what converts.</p>
+  <div class="tiers">
+    <div class="tier">
+      <div class="tn">Single signal</div>
+      <div class="pr">$15<span> / lead</span></div>
+      <ul>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>One verified distress signal</li>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>Address + county record ref</li>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>Owner where available</li>
+      </ul>
+      <a class="buy outline" href="https://buy.stripe.com/14A14nbfPeS75eegLE7Vm01">Buy single-signal</a>
     </div>
-    <div class="note"><b>Exclusive vs shared:</b> exclusive leads go to one buyer only and are priced at a premium. Shared batches are cheaper. Phone-verified tiers arrive with skip-trace enrichment.</div>
-  </section>
-
-  <section>
-    <h2>Get the free sample</h2>
-    <p class="sub">10 scored, cross-verified Miami-Dade leads — full addresses, owner names, ZIPs. No commitment, no card. Tell us your target counties or ZIPs and we'll pull the sample from this week's harvest.</p>
-    <a class="cta" href="mailto:leadmachine@agentmail.to?subject=Free%20sample%20request%20%E2%80%94%2010%20leads&body=Hi%2C%20I%27d%20like%20the%20free%2010-lead%20sample.%20My%20target%20counties%2FZIPs%3A%20">Email us — leadmachine@agentmail.to</a>
-  </section>
-</div>
-
-<footer><div class="wrap">
-  LeadMachine FL · Property data compiled from public county records. We sell data only — no consumer contact is made or implied, and all homeowner outreach and its compliance (incl. TCPA) is the buyer's responsibility. · <a href="/terms.html">Data License &amp; Terms</a> · <a href="mailto:leadmachine@agentmail.to">leadmachine@agentmail.to</a>
+    <div class="tier feat">
+      <div class="fl">MOST POPULAR</div>
+      <div class="tn">Cross-verified</div>
+      <div class="pr">$30<span> / lead</span></div>
+      <ul>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>Code violation + absentee owner</li>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>Owner name + ZIP verified vs PA</li>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>The current inventory sweet spot</li>
+      </ul>
+      <a class="buy solid" href="https://buy.stripe.com/aFa7sLdnX11h2222UO7Vm00">Buy cross-verified</a>
+    </div>
+    <div class="tier">
+      <div class="tn">Stacked signals</div>
+      <div class="pr">$50+<span> / lead</span></div>
+      <ul>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>3+ signals (tax, probate, liens)</li>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>Exclusive delivery available</li>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>Rolling out as sources expand</li>
+      </ul>
+      <a class="buy outline" href="mailto:leadmachine@agentmail.to?subject=Stacked-signal%20%2F%20exclusive%20inquiry">Talk to us</a>
+    </div>
+  </div>
+</div></section>
+<div class="wrap"><div class="final">
+  <div class="eyebrow">Free, no card</div>
+  <h2>Get 10 scored leads on us</h2>
+  <p class="lede">Full addresses, owner names and ZIPs — pulled from this week's Miami-Dade harvest. Tell us your target counties or ZIPs and we'll filter the sample to them.</p>
+  <a class="btn-primary" href="mailto:leadmachine@agentmail.to?subject=Free%20sample%20request%20%E2%80%94%2010%20leads&body=Hi%2C%20I%27d%20like%20the%20free%2010-lead%20sample.%20My%20target%20counties%2FZIPs%3A%20">Email us — leadmachine@agentmail.to</a>
+</div></div>
+</main>
+<footer><div class="wrap frow">
+  <div>© 2026 LeadMachine FL · Data compiled from public county records. We sell data only — no consumer contact is made or implied; all homeowner outreach and its compliance (incl. TCPA) is the buyer's responsibility.</div>
+  <div><a href="/terms.html">Data License &amp; Terms</a> &nbsp;·&nbsp; <a href="mailto:leadmachine@agentmail.to">Contact</a></div>
 </div></footer>
 </body>
 </html>

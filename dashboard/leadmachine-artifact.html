@@ -349,10 +349,16 @@
             <div class="bar orl" style="height:91.7%" data-tip="Orange · 12.08 · 433 לידים (קציר ראשון)"><span class="val">433</span></div>
             <div class="bar brw" style="height:57.8%" data-tip="Broward · 12.08 · 273 לידים (קציר ראשון)"><span class="val">273</span></div>
           </div>
+          <div class="day">
+            <div class="bar lee zero" data-tip="Lee · 13.08 · 0 — המקור מחזיר 404 (ראו הערה)"><span class="val">0</span></div>
+            <div class="bar mdc" style="height:32%" data-tip="Miami-Dade · 13.08 · 151 לידים"><span class="val">151</span></div>
+            <div class="bar orl" style="height:8.7%" data-tip="Orange · 13.08 · 41 לידים"><span class="val">41</span></div>
+            <div class="bar brw" style="height:55.9%" data-tip="Broward · 13.08 · 264 לידים"><span class="val">264</span></div>
+          </div>
         </div>
-        <div class="day-labels"><span>08.08</span><span>09.08</span><span>10.08</span><span>11.08</span><span>12.08</span></div>
+        <div class="day-labels"><span>08.08</span><span>09.08</span><span>10.08</span><span>11.08</span><span>12.08</span><span>13.08</span></div>
       </div>
-      <div class="viz-foot">היום הראשון (08.08) כולל את מילוי־הבסיס ההיסטורי של 30 הימים האחרונים; מכאן והלאה נכנס רק מה שחדש באמת. ב-12.08 הקפיצה היא מילוי־הבסיס של Orange ו-Broward, לא קצב יומי.</div>
+      <div class="viz-foot">היום הראשון (08.08) כולל את מילוי־הבסיס ההיסטורי של 30 הימים האחרונים; מכאן והלאה נכנס רק מה שחדש באמת. ב-12.08 הקפיצה היא מילוי־הבסיס של Orange ו-Broward, לא קצב יומי. ב-13.08 ה-cron של Vercel חזר לעבוד אחרי תקלת ה-500 (456 לידים חדשים) — אבל Cape Coral מחזיר 404 ולא הכניס כלום.</div>
     </div>
 
     <h2 class="sec">כיסוי שדות — אחרי ההעשרה</h2>
@@ -373,7 +379,7 @@
           </tr>
           <tr>
             <td><b>Miami-Dade</b></td>
-            <td class="num">436</td>
+            <td class="num">631</td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:98%"></span></span><span class="pct">98%</span></span></td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:99%"></span></span><span class="pct">99%</span></span></td>
             <td class="num"><b>199</b> (46%)</td>
@@ -381,7 +387,7 @@
           </tr>
           <tr>
             <td><b>Orange</b> · Orlando</td>
-            <td class="num">433</td>
+            <td class="num">474</td>
             <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
             <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
             <td class="num">— אין enrichment</td>
@@ -389,7 +395,7 @@
           </tr>
           <tr>
             <td><b>Broward</b> · Deerfield Beach</td>
-            <td class="num">273</td>
+            <td class="num">537</td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:100%"></span></span><span class="pct">100%</span></span></td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:100%"></span></span><span class="pct">100%</span></span></td>
             <td class="num">— בתור</td>
@@ -401,7 +407,7 @@
 
     <div style="height:14px"></div>
     <div class="warncard">
-      <p><b>האמת על האיכות, בלי ייפוי:</b> 1,700 לידים עדיין בציון 15 (סיגנל בודד) ו-199 בציון 30 (code violation + absentee — בעלים שגר בכתובת אחרת, לרוב משקיע עייף). ה-199 האלה הם המוצר החזק כרגע, וכולם Miami-Dade — כי רק שם רץ זיהוי absentee. 433 מתוך הגידול של היום (Orange) הם כתובת בלבד, בלי שם בעלים. סיגנל ה-tax delinquent חסום בינתיים: רשימות החוב הרשמיות של המחוזות יושבות מאחורי חסימת Cloudflare שדורשת headless browser או דאטה ברישיון — מתועד כשדרוג הבא.</p>
+      <p><b>האמת על האיכות, בלי ייפוי:</b> 2,133 לידים בציון 15 (סיגנל בודד) ו-199 בציון 30 (code violation + absentee — בעלים שגר בכתובת אחרת, לרוב משקיע עייף). ה-199 האלה הם המוצר החזק כרגע, וכולם Miami-Dade — כי רק שם רץ זיהוי absentee. <b>שים לב לפער המכירתי:</b> מתוכם רק 191 עומדים בתנאי המסירה בפועל (שם בעלים + מיקוד, בלי גופים עירוניים/אגודות) — זה כל המלאי שניתן למכור בטייר ה-$30, וכולו מחוז אחד. הקציר של 13.08 הוסיף 456 לידים אבל אף אחד מהם לא בציון 30: Orange נכנס ככתובת בלבד, ו-Miami-Dade מחכה להעשרה (135 שורות ללא שם בעלים). סיגנל ה-tax delinquent חסום בינתיים: רשימות החוב הרשמיות של המחוזות יושבות מאחורי חסימת Cloudflare שדורשת headless browser או דאטה ברישיון — מתועד כשדרוג הבא.</p>
     </div>
 
     <h2 class="sec">ריצות אחרונות של ה-Harvester</h2>
@@ -410,6 +416,10 @@
       <table class="data">
         <thead><tr><th>תאריך (UTC)</th><th>מקור</th><th>נמשכו</th><th>נכנסו</th><th>כפילויות</th><th>סטטוס</th></tr></thead>
         <tbody>
+          <tr><td class="num">13.08 09:46</td><td>capecoral_code_open</td><td class="num">0</td><td class="num"><b>0</b></td><td class="num">0</td><td><span class="chip crit"><span class="dot"></span>404 Service not found</span></td></tr>
+          <tr><td class="num">13.08 07:46</td><td>deerfield_code_cases</td><td class="num">319</td><td class="num"><b>264</b></td><td class="num">55</td><td><span class="chip live"><span class="dot"></span>cron אוטומטי</span></td></tr>
+          <tr><td class="num">13.08 07:46</td><td>mdc_code_violations</td><td class="num">500</td><td class="num"><b>151</b></td><td class="num">108</td><td><span class="chip live"><span class="dot"></span>cron אוטומטי</span></td></tr>
+          <tr><td class="num">13.08 07:46</td><td>orlando_code_enforcement</td><td class="num">496</td><td class="num"><b>41</b></td><td class="num">68</td><td><span class="chip live"><span class="dot"></span>cron אוטומטי</span></td></tr>
           <tr><td class="num">12.08 10:30</td><td>deerfield_code_cases</td><td class="num">329</td><td class="num"><b>273</b></td><td class="num">56</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית</span></td></tr>
           <tr><td class="num">12.08 10:30</td><td>orlando_code_enforcement</td><td class="num">496</td><td class="num"><b>433</b></td><td class="num">63</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית</span></td></tr>
           <tr><td class="num">12.08 10:30</td><td>capecoral_code_open</td><td class="num">211</td><td class="num"><b>196</b></td><td class="num">15</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית</span></td></tr>
@@ -525,7 +535,7 @@
     <ol class="roadmap">
       <li>
         <span class="step-mark done">✓</span>
-        <span><span class="t">תשתית ייצור אוטומטית</span><br><span class="d">ארבעה מקורות ממשלתיים חינמיים, Cron יומי, ניקוד בסיסי, דה-דופליקציה. 1,943 לידים במסד (1,899 זמינים).</span></span>
+        <span><span class="t">תשתית ייצור אוטומטית</span><br><span class="d">ארבעה מקורות ממשלתיים חינמיים, Cron יומי, ניקוד בסיסי, דה-דופליקציה. 2,399 לידים במסד (2,332 זמינים).</span></span>
         <span class="chip live"><span class="dot"></span>בוצע</span>
       </li>
       <li>

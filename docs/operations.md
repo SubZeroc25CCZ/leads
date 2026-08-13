@@ -75,6 +75,35 @@ Artifact, דחיפת קוד.
 D1 נקי: 1,943 שורות / 1,943 מפתחות / 0 כתובות עם זנב אחרי המיקוד.
 **העקיפה בלולאה 2 (נרמול ידני לפני ה-upsert) כבר לא נדרשת.**
 
+## ⛔ אזהרה: שני פרויקטי Vercel מחוברים לאותו ריפו (13.08.2026)
+
+`leadmachine-buyers` **וגם** `leadmachine-probe` מחוברים ל-GitHub על אותו ריפו ואותו
+ענף. כל `git push` פורס **את שניהם** מ-root של הריפו. זה הפיל את שניהם ב-13.08:
+
+- **האתר** החזיר 404 על כל נתיב (כולל `/api/lead`) כי ב-root אין `index.html`.
+  תוקן: `vercel.json` עם `outputDirectory: "site"` + העברת הפונקציה ל-`api/lead.js`
+  ב-root (זה הפריסה הסטנדרטית של Vercel). האתר עובד.
+- **ה-probe** נשבר מאותה סיבה — הפונקציות שלו יושבות ב-`probe/api/`, לא ב-root.
+  אחרי שהעברתי את `lead.js` ל-root, ה-probe התחיל להגיש את `/api/lead` במקום
+  `/api/probe`. שוחזר ב-**פריסה ידנית** (`deploy_to_vercel`, 5 פונקציות מ-`probe/api/`).
+
+**המשמעות: ה-probe חי כרגע על פריסה ידנית שאינה מגיט. כל push הבא ידרוס אותו וישבור
+שוב את `/api/adapter` (מקור Orlando), `/api/harvest-fetch` (fallback הקציר),
+`/api/mdc-enrich` ו-`/api/buyer-hunt`.**
+
+**פעולת בעלים נדרשת לפני ה-push הבא** — אחת מהשתיים בדשבורד Vercel:
+1. `leadmachine-probe` → Settings → Git → **Disconnect** (ואז לפרוס אותו ידנית בלבד); או
+2. `leadmachine-probe` → Settings → Build → **Root Directory = `probe`**
+   (ואז גם לשקול `leadmachine-buyers` → Root Directory = `site`, ולהחזיר את
+   `lead.js` ל-`site/api/`).
+
+עד אז: אחרי כל push חובה לפרוס את ה-probe מחדש ידנית ולאמת
+`/api/probe`, `/api/adapter`, `/api/harvest-fetch`.
+
+**הערה נוספת:** הריפו **ציבורי** וה-secret של ה-probe מוטמע בקוד — כלומר
+`/api/probe` הוא בפועל fetch-proxy פתוח לכל מי שקורא את הריפו. שווה רוטציה של
+הסוד + הפיכת הריפו לפרטי.
+
 ## Artifact הסטטוס
 
 מקור ה-Artifact הפנימי (עברית, 4 לשוניות) שמור בריפו ב-`dashboard/leadmachine-artifact.html`

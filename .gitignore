@@ -1,0 +1,4 @@
+# Claude Code personal settings — permission grants are per-machine and must
+# not be shared through the repo. The committed counterpart (.claude/settings.json)
+# is intentionally absent: granting push rights repo-wide is an owner decision.
+.claude/settings.local.json

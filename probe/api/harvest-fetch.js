@@ -12,6 +12,10 @@ const keyOf = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 // ("... DEERFIELD BEACH, FL 33064 B7", "... FL 33442 #227"). Nothing meaningful
 // follows a ZIP in a US address, so anything trailing it is dropped — otherwise
 // the same property yields two address_keys and dedup misses it.
+// Placeholders the county systems put in the address field when they have none.
+// Miami-Dade uses "NOT AVAILABLE" alongside the two we already knew about, and one
+// such row reached D1 as a lead before this was caught (16.08).
+const PLACEHOLDERS = new Set(["NO ADDRESS", "NOT AVAILABLE", "EXEMPT FROM PUBLIC RECORDS"]);
 const stripAfterZip = (s) => s.replace(/(\bFL\s+\d{5})\b.*$/i, "$1");
 const cleanAddr = (s) => stripAfterZip(String(s || "").replace(/\s+/g, " ").trim()).trim();
 
@@ -44,7 +48,7 @@ module.exports = async (req, res) => {
       const address_key = keyOf(address);
       if (
         !address || address_key.length < 4 ||
-        address === "NO ADDRESS" || address === "EXEMPT FROM PUBLIC RECORDS" ||
+        PLACEHOLDERS.has(address.toUpperCase()) ||
         address.includes(" - ") || seen.has(address_key)
       ) { skipped += 1; continue; }
       seen.add(address_key);

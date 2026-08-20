@@ -3,7 +3,10 @@ const ACCOUNT = process.env.CF_ACCOUNT_ID || "3472fe0b25f5c0f49a99d537cbe2cf35";
 async function d1(sql, params) {
   if (!process.env.CF_API_TOKEN) throw new Error("D1 credentials not configured");
   const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/d1/database/${DB_ID}/query`, { method: "POST", headers: { Authorization: `Bearer ${process.env.CF_API_TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify({ sql, params }) });
-  const body = await r.json(); if (!r.ok || body.success === false) throw new Error("D1 query failed"); return body.result;
+  const body = await r.json();
+  if (!r.ok || body.success === false) throw new Error("D1 query failed");
+  // Cloudflare D1's REST API wraps the statement result in result[0].
+  return Array.isArray(body.result) ? body.result[0] : body.result;
 }
 function isBot(req) {
   const asn = String(req.headers["x-vercel-ip-asn"] || req.headers["x-forwarded-for-asn"] || "");

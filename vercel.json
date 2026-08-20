@@ -1,6 +1,6 @@
 {
   "outputDirectory": "site",
   "rewrites": [
-    { "source": "/o/:token", "destination": "/api/offer?token=:token" }
+    { "source": "/o/:token", "destination": "/api/o/:token" }
   ]
 }

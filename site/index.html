@@ -3,564 +3,418 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LeadMachine FL — Distressed-property records, harvested daily</title>
-<meta name="description" content="Open code-enforcement cases and absentee ownership, pulled from Florida county records every morning, scored and verified against the Property Appraiser. Data only — you own the outreach.">
+<title>LeadMachine FL — v4 editorial-tech</title>
+<!--
+  DESIGN SPEC v4 (for Manus) — per owner's reference (Type/Opinion)
+  =================================================================
+  Aesthetic: modern editorial-tech. White, minimal grid, generous whitespace,
+  thin lines, structured modules. Typewriter mono = the brand voice, inside a
+  very modern layout. Dynamic through floating cards + thin flowing lines +
+  dotted textures — never through decoration.
+
+  Tokens:
+    --bg      #FFFFFF
+    --ink     #101112
+    --gray    #6E747D
+    --line    #E6E8EB
+    --blue    #2946F5   electric blue — primary accent, hierarchy & energy
+    --coral   #F2695C   secondary accent — small strategic touches only
+    --green   #E8F1D6   pale green — signal tags
+    --dark    #101112   dark module cards
+
+  Type:
+    Brand/headings  "Courier Prime" 400/700 — typewriter voice, tight tracking on big sizes
+    Body            "Inter" 400/500 — 16px/1.65
+    Labels          Courier Prime 11-12px uppercase letterspaced, colored per category
+
+  Rules:
+    - Accents are strategic, never ambient: blue = actions & key data,
+      coral = tiny geometric touches, green = signal tags. Mostly page is b/w/gray.
+    - Thin 1px rules structure everything; sharp corners (2px max) — the grid IS the design.
+    - Hero: mono headline + blue full stop + blue underline bar; right side floating
+      collage: signal tag, dark trend card, county-record card, sparkline card,
+      flowing thin line SVG, dot grids, rotated side caption.
+    - BANNED (owner, permanent): amber/orange on dark navy; pretentious serif displays.
+-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --paper:#E9E7DF;
-  --paper-2:#F3F2EC;
-  --ink:#15181D;
-  --ink-60:rgba(21,24,29,.62);
-  --ink-38:rgba(21,24,29,.38);
-  --survey:#2A4759;
-  --stamp:#A5291B;
-  --verified:#4A6B43;
-  --rule:rgba(21,24,29,.16);
-  --rule-soft:rgba(21,24,29,.08);
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --body:"Public Sans",system-ui,-apple-system,sans-serif;
-  --display:"Archivo",system-ui,sans-serif;
-  --wrap:1180px;
-}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{
-  margin:0;background:var(--paper);color:var(--ink);
-  font-family:var(--body);font-size:16px;line-height:1.62;
-  -webkit-font-smoothing:antialiased;
-  background-image:
-    linear-gradient(to right,var(--rule-soft) 1px,transparent 1px),
-    linear-gradient(to bottom,var(--rule-soft) 1px,transparent 1px);
-  background-size:64px 64px;
-}
-img,svg{max-width:100%}
-a{color:inherit}
-.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+  :root{
+    --bg:#FFFFFF; --ink:#101112; --gray:#6E747D; --line:#E6E8EB;
+    --blue:#2946F5; --coral:#F2695C; --green:#E8F1D6; --dark:#101112;
+    --mono:'Courier Prime',monospace; --body:'Inter',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);font-size:16px;line-height:1.65;color:var(--ink);background:var(--bg)}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+  a{color:var(--ink);text-decoration:none}
+  h1,h2{font-family:var(--mono);font-weight:700;line-height:1.18;letter-spacing:-0.01em}
+  h1{font-size:clamp(38px,4.6vw,58px)}
+  h2{font-size:clamp(24px,2.6vw,32px)}
+  .dot-b{color:var(--blue)}
+  .label{font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+  .l-blue{color:var(--blue)} .l-green{color:#6E8F3D} .l-gray{color:var(--gray)}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:15px 24px;transition:.15s}
+  .btn-blue{background:var(--blue);color:#fff}
+  .btn-blue:hover{background:#1F38D8}
+  .btn-line{border:1px solid var(--ink);color:var(--ink)}
+  .btn-line:hover{background:var(--ink);color:#fff}
+  .arrow{font-family:var(--body)}
 
-/* ---------- type ---------- */
-.eyebrow{
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-38);
-}
-h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;line-height:1.02;
-  font-variation-settings:"wdth" 112;letter-spacing:-.015em;}
-h1{font-size:clamp(2.6rem,7vw,5.1rem);text-transform:uppercase;}
-h2{font-size:clamp(1.9rem,4.2vw,3.1rem);text-transform:uppercase;}
-h3{font-size:1.02rem;font-variation-settings:"wdth" 100;letter-spacing:.01em;text-transform:none;font-weight:700}
-p{margin:0 0 1em}
-.lede{font-size:clamp(1.02rem,1.7vw,1.2rem);color:var(--ink-60);max-width:60ch}
+  /* nav */
+  nav{border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:20}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:76px}
+  .logo{font-family:var(--mono);font-weight:700;font-size:17px;letter-spacing:.14em}
+  .logo span{color:var(--blue)}
+  .nav-links{display:flex;gap:36px}
+  .nav-links a{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+  .nav-links a:hover{color:var(--blue)}
+  .nav-cta{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--ink);padding:10px 18px}
+  .nav-cta:hover{background:var(--ink);color:#fff}
 
-/* ---------- section frame ---------- */
-.band{border-top:1px solid var(--rule);padding:clamp(56px,8vw,104px) 0}
-.band-head{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:38px}
-.band-head .eyebrow{white-space:nowrap}
-.band-head .rulefill{flex:1;height:1px;background:var(--rule);min-width:30px}
+  /* hero */
+  .hero{position:relative;padding:96px 0 110px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:460px 1fr;gap:40px}
+  .hero h1{margin-bottom:6px}
+  .hero .bar{width:34px;height:4px;background:var(--blue);margin:26px 0 24px}
+  .hero .lead{color:var(--gray);font-size:16.5px;max-width:400px;margin-bottom:36px}
+  .hero-ctas{display:flex;gap:16px;flex-wrap:wrap}
 
-/* ---------- header ---------- */
-.site{position:sticky;top:0;z-index:50;background:rgba(233,231,223,.93);
-  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
-.site .wrap{display:flex;align-items:center;justify-content:space-between;height:62px;gap:18px}
-.mark{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 118;
-  font-size:1.02rem;letter-spacing:.02em;text-transform:uppercase;text-decoration:none;white-space:nowrap}
-.mark span{color:var(--stamp)}
-.nav{display:flex;align-items:center;gap:26px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
-.nav a{text-decoration:none;color:var(--ink-60);padding:4px 0;border-bottom:1px solid transparent}
-.nav a:hover,.nav a:focus-visible{color:var(--ink);border-bottom-color:var(--stamp)}
-@media(max-width:800px){.nav a:not(.btn-sm){display:none}}
-.btn-sm{background:var(--ink);color:var(--paper-2)!important;padding:8px 15px;border-bottom:none!important}
-.btn-sm:hover{background:var(--stamp)}
+  /* collage */
+  .stage{position:relative;min-height:480px}
+  .dots{position:absolute;background-image:radial-gradient(var(--line) 1.1px, transparent 1.1px);background-size:14px 14px}
+  .d1{top:0;left:120px;width:300px;height:120px}
+  .d2{bottom:40px;right:60px;width:220px;height:140px}
+  .flow{position:absolute;inset:0;width:100%;height:100%}
+  .card{position:absolute;background:#fff;border:1px solid var(--line);box-shadow:0 18px 50px rgba(16,17,18,.08)}
+  .sig{left:0;top:132px;width:170px;z-index:6;background:var(--green);border:0;padding:20px}
+  .sig .label{margin-bottom:10px}
+  .sig .t{font-family:var(--mono);font-weight:700;font-size:15px;line-height:1.4}
+  .trend{left:186px;top:88px;width:220px;background:var(--dark);color:#fff;border:0;padding:22px;z-index:5}
+  .trend .label{color:#9BA3AE;margin-bottom:12px}
+  .trend .t{font-family:var(--mono);font-weight:700;font-size:15px;line-height:1.55;margin-bottom:18px}
+  .trend .arr{color:#fff;font-size:18px}
+  .rec{right:150px;top:26px;width:230px;padding:20px;z-index:4}
+  .rec .label{margin-bottom:12px}
+  .rec .t{font-family:var(--mono);font-weight:700;font-size:16px;margin-bottom:4px}
+  .rec .m{font-family:var(--mono);font-size:11.5px;color:var(--gray)}
+  .rec .foot{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--gray)}
+  .rec .foot b{color:var(--blue);font-size:14px}
+  .chart{right:0;top:210px;width:250px;padding:18px;z-index:2}
+  .chart .m{font-family:var(--mono);font-size:10.5px;color:var(--gray);display:flex;justify-content:space-between;margin-bottom:10px}
+  .blue-block{position:absolute;right:96px;bottom:56px;width:200px;height:120px;background:var(--blue);z-index:1}
+  .coral-block{position:absolute;left:210px;bottom:24px;width:150px;height:56px;background:var(--coral);opacity:.85;z-index:2}
+  .bw-block{position:absolute;right:10px;bottom:16px;width:110px;height:120px;background:linear-gradient(160deg,#2a2c2f 0%,#6a6f75 55%,#d8dadd 100%);z-index:3}
+  .side-cap{position:absolute;right:-6px;top:120px;writing-mode:vertical-rl;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--gray);text-transform:uppercase}
+  .side-cap::before{content:"";display:block;width:1px;height:44px;background:var(--blue);margin:0 auto 14px}
+  .plus{position:absolute;font-family:var(--mono);color:var(--gray)}
+  .sq{position:absolute;width:7px;height:7px;background:var(--ink)}
+  .sq.b{background:var(--blue)}
 
-/* ---------- hero ---------- */
-.hero{padding:clamp(48px,7vw,86px) 0 clamp(40px,6vw,72px)}
-.hero-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:clamp(34px,5vw,68px);align-items:center}
-@media(max-width:920px){.hero-grid{grid-template-columns:1fr;gap:44px}}
-.livetag{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;
-  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-60);
-  border:1px solid var(--rule);padding:6px 12px;margin-bottom:24px}
-.dot{width:6px;height:6px;background:var(--verified);border-radius:50%}
-@media(prefers-reduced-motion:no-preference){.dot{animation:pulse 2.4s ease-in-out infinite}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
-h1 em{font-style:normal;color:var(--stamp)}
-.hero p.lede{margin-top:22px}
-.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px;align-items:center}
-.btn{display:inline-block;font-family:var(--mono);font-size:12.5px;font-weight:600;
-  letter-spacing:.1em;text-transform:uppercase;text-decoration:none;padding:15px 26px;
-  border:1px solid var(--ink);transition:background .16s,color .16s}
-.btn-primary{background:var(--ink);color:var(--paper-2)}
-.btn-primary:hover,.btn-primary:focus-visible{background:var(--stamp);border-color:var(--stamp)}
-.btn-ghost{background:transparent;color:var(--ink)}
-.btn-ghost:hover,.btn-ghost:focus-visible{background:var(--ink);color:var(--paper-2)}
+  /* stats strip */
+  .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .stats-in{display:grid;grid-template-columns:repeat(5,1fr)}
+  .stat{display:flex;gap:16px;align-items:flex-start;padding:34px 26px;border-right:1px solid var(--line)}
+  .stat:last-child{border-right:0}
+  .stat svg{width:26px;height:26px;flex:none;margin-top:3px}
+  .stat .n{font-family:var(--mono);font-weight:700;font-size:24px;line-height:1.1}
+  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin-top:2px}
+  .stat .s{font-size:12.5px;color:var(--gray);margin-top:3px}
 
-/* ---------- signature: record card ---------- */
-.record{position:relative;background:var(--paper-2);border:1px solid var(--ink);
-  box-shadow:7px 7px 0 rgba(21,24,29,.11)}
-.record-top{display:flex;justify-content:space-between;gap:12px;align-items:center;
-  border-bottom:1px solid var(--rule);padding:11px 18px;font-family:var(--mono);
-  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-38)}
-.record-body{padding:24px 18px 18px;position:relative}
-.record-addr{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 100;
-  font-size:clamp(1.3rem,3vw,1.72rem);line-height:1.08;letter-spacing:-.01em}
-.record-sub{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--ink-60);margin-top:9px}
-.record-rows{margin-top:20px;border-top:1px solid var(--rule)}
-.rrow{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--rule-soft);
-  font-family:var(--mono);font-size:12px}
-.rrow dt{width:88px;flex:none;color:var(--ink-38);letter-spacing:.09em;text-transform:uppercase;font-size:10.5px;padding-top:1px}
-.rrow dd{margin:0;letter-spacing:.02em}
-.redact{background:var(--ink);color:transparent;padding:0 2px;user-select:none}
-.chip{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
-  text-transform:uppercase;border:1px solid var(--rule);padding:3px 7px;margin:0 5px 4px 0}
-.chip-v{border-color:var(--stamp);color:var(--stamp)}
-.chip-a{border-color:var(--survey);color:var(--survey)}
-.record-score{display:flex;align-items:flex-end;justify-content:space-between;
-  border-top:1px solid var(--ink);margin-top:16px;padding-top:14px}
-.score-num{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 118;
-  font-size:3.5rem;line-height:.82;letter-spacing:-.03em}
-.stamp{position:absolute;top:14px;right:10px;border:2.5px solid var(--stamp);color:var(--stamp);
-  font-family:var(--mono);font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
-  padding:6px 10px;transform:rotate(-11deg);opacity:.72;pointer-events:none;line-height:1.25;text-align:center}
+  section{padding:104px 0}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:44px}
+  .sec-head .label{display:block;margin-bottom:12px}
+  .view-all{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .view-all:hover{color:var(--blue)}
 
-/* ---------- sources ---------- */
-.sources{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:20px 0}
-.sources .wrap{display:flex;gap:12px 30px;flex-wrap:wrap;align-items:center;
-  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-60)}
-.sources b{color:var(--ink-38);font-weight:600}
+  /* insight-style cards = live rows */
+  .cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .icard{border:1px solid var(--line);display:flex;flex-direction:column}
+  .icard .top{padding:22px 22px 18px;flex:1}
+  .icard .label{display:block;margin-bottom:12px}
+  .icard .t{font-family:var(--mono);font-weight:700;font-size:16px;line-height:1.45;margin-bottom:10px}
+  .icard .s{font-size:13.5px;color:var(--gray)}
+  .icard .viz{height:120px;border-top:1px solid var(--line);position:relative;overflow:hidden}
+  .icard .arr{position:absolute;left:22px;bottom:16px;font-size:18px}
+  .viz-blue{background:linear-gradient(135deg,#fff 45%,transparent 45%),var(--blue)}
+  .viz-dark{background:linear-gradient(120deg,#fff 50%,transparent 50%),#101112}
+  .viz-green{background:var(--green)}
+  .viz-bw{background:linear-gradient(160deg,#33363a,#c9ccd0)}
+  .viz .coral-tag{position:absolute;right:14px;top:14px;width:52px;height:30px;background:var(--coral)}
+  .viz .score-big{position:absolute;right:18px;bottom:12px;font-family:var(--mono);font-weight:700;font-size:34px;color:#fff}
+  .viz-green .score-big{color:var(--ink)}
 
-/* ---------- steps ---------- */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule)}
-@media(max-width:800px){.steps{grid-template-columns:1fr}}
-.step{background:var(--paper);padding:28px 24px 30px}
-.step-n{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--stamp);display:block;margin-bottom:16px}
-.step h3{margin-bottom:9px}
-.step p{color:var(--ink-60);font-size:14.5px;margin:0}
+  /* scoring */
+  .alt{background:#FAFAFB;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .score-tbl{border:1px solid var(--line);background:#fff;max-width:760px}
+  .score-row{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--line);font-size:15px}
+  .score-row:last-child{border-bottom:0;background:#FAFAFB}
+  .score-row .pts{font-family:var(--mono);font-weight:700;color:var(--blue)}
+  .score-note{margin-top:22px;color:var(--gray);font-size:14.5px;max-width:640px}
 
-/* ---------- scoring ---------- */
-.score-split{display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(30px,5vw,64px);align-items:start}
-@media(max-width:860px){.score-split{grid-template-columns:1fr;gap:34px}}
-.rubric{border:1px solid var(--ink);background:var(--paper-2)}
-.rubric-h{padding:11px 18px;border-bottom:1px solid var(--ink);font-family:var(--mono);
-  font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-60);
-  display:flex;justify-content:space-between}
-.rline{display:flex;justify-content:space-between;gap:16px;align-items:baseline;
-  padding:13px 18px;border-bottom:1px solid var(--rule-soft);font-size:14.5px}
-.rline:last-child{border-bottom:none}
-.rline b{font-family:var(--mono);font-size:14px;font-weight:600;white-space:nowrap}
-.rline span{color:var(--ink-60)}
+  /* pricing */
+  .price3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .plan{border:1px solid var(--line);padding:34px 30px;display:flex;flex-direction:column}
+  .plan.f{border-color:var(--blue);border-width:1.5px}
+  .plan .label{display:block;margin-bottom:16px}
+  .plan .price{font-family:var(--mono);font-weight:700;font-size:44px;line-height:1}
+  .plan .per{font-family:var(--mono);font-size:11.5px;color:var(--gray);letter-spacing:.06em;margin:8px 0 22px}
+  .plan ul{list-style:none;flex:1;margin-bottom:28px}
+  .plan li{font-size:14px;color:var(--gray);padding:7px 0 7px 20px;position:relative}
+  .plan li::before{content:"·";position:absolute;left:2px;color:var(--blue);font-weight:700}
+  .plan .btn{justify-content:center}
 
-/* ---------- table ---------- */
-.tablewrap{border:1px solid var(--ink);background:var(--paper-2);overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
-thead th{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--ink-38);text-align:left;padding:12px 16px;
-  border-bottom:1px solid var(--ink);white-space:nowrap}
-tbody td{padding:14px 16px;border-bottom:1px solid var(--rule-soft);vertical-align:middle}
-tbody tr:last-child td{border-bottom:none}
-td.addr{font-family:var(--mono);font-size:13px;letter-spacing:.02em;white-space:nowrap}
-td.sc{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 112;font-size:1.35rem;text-align:right}
-td.dt{font-family:var(--mono);font-size:11.5px;color:var(--ink-38);white-space:nowrap}
-.note{font-size:14.5px;color:var(--ink-60);max-width:74ch;margin-top:22px}
-.note b{color:var(--ink)}
+  /* claim */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start}
+  .form-card{border:1px solid var(--line);padding:38px}
+  .form-card label{display:block;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:22px 0 8px}
+  .form-card label:first-child{margin-top:0}
+  .form-card input,.form-card select{width:100%;font-family:var(--body);font-size:15px;padding:13px 14px;border:1px solid var(--line);background:#fff;border-radius:0}
+  .form-card input:focus,.form-card select:focus{outline:2px solid var(--blue);outline-offset:-1px}
+  .form-card .btn{width:100%;justify-content:center;margin-top:28px;border:0;cursor:pointer}
+  .form-fine{margin-top:14px;font-size:12px;color:var(--gray)}
+  .claim-note{margin-top:20px;font-size:14px;color:var(--gray);max-width:420px}
+  .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.faq-item{border-top:1px solid var(--line);padding:18px 0}.faq-item h3{font-family:var(--mono);font-size:15px;margin-bottom:7px}.faq-item p{font-size:14px;color:var(--gray);max-width:560px}.live-note{font-family:var(--mono);font-size:11px;color:var(--gray);margin-top:12px}
+  .chat-toggle{position:fixed;right:24px;bottom:24px;z-index:40;background:var(--blue);color:#fff;border:0;padding:15px 18px;font-family:var(--mono);font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(16,17,18,.18)}.chat{position:fixed;right:24px;bottom:78px;width:min(380px,calc(100vw - 32px));background:#fff;border:1px solid var(--ink);z-index:40;box-shadow:0 18px 50px rgba(16,17,18,.18);display:none}.chat.open{display:block}.chat-head{background:var(--dark);color:#fff;padding:16px 18px;font-family:var(--mono);font-size:13px;display:flex;justify-content:space-between}.chat-close{background:none;border:0;color:#fff;font-size:18px;cursor:pointer}.chat-log{height:280px;overflow:auto;padding:14px}.bubble{max-width:88%;padding:10px 12px;margin:0 0 10px;font-size:13px;line-height:1.5}.bubble.bot{background:var(--green)}.bubble.user{margin-left:auto;background:#f2f3f5}.chat-form{display:flex;border-top:1px solid var(--line)}.chat-form input{flex:1;border:0;padding:13px;font:14px var(--body);min-width:0}.chat-form button{border:0;background:var(--blue);color:#fff;padding:0 15px;font-family:var(--mono);cursor:pointer}
+  @media(max-width:1000px){.faq-grid{grid-template-columns:1fr}}
 
-/* ---------- compare ---------- */
-.compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule)}
-@media(max-width:760px){.compare{grid-template-columns:1fr}}
-.cbox{background:var(--paper);padding:26px 24px}
-.cbox.mine{background:var(--paper-2);border-left:3px solid var(--stamp)}
-@media(max-width:760px){.cbox.mine{border-left:none;border-top:3px solid var(--stamp)}}
-.cbox h3{margin-bottom:14px}
-.cbox ul{margin:0;padding:0;list-style:none}
-.cbox li{padding:7px 0 7px 20px;position:relative;font-size:14.5px;color:var(--ink-60);border-bottom:1px solid var(--rule-soft)}
-.cbox li:last-child{border-bottom:none}
-.cbox li::before{content:"—";position:absolute;left:0;color:var(--ink-38);font-family:var(--mono)}
-.cbox.mine li::before{content:"+";color:var(--stamp)}
+  footer{border-top:1px solid var(--line);padding:44px 0;font-size:12.5px;color:var(--gray)}
+  footer .legal{max-width:860px;margin-bottom:16px}
+  footer a{color:var(--gray);text-decoration:underline}
 
-/* ---------- pricing ---------- */
-.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
-@media(max-width:880px){.tiers{grid-template-columns:1fr}}
-.tier{background:var(--paper);padding:28px 24px 26px;display:flex;flex-direction:column}
-.tier.pick{background:var(--paper-2);position:relative}
-.tier.pick::before{content:"Current inventory";position:absolute;top:0;left:0;right:0;
-  background:var(--stamp);color:var(--paper-2);font-family:var(--mono);font-size:9.5px;
-  font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:5px 24px}
-.tier.pick{padding-top:44px}
-.tier-name{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-38)}
-.price{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 112;
-  font-size:2.7rem;line-height:1;margin:14px 0 4px;letter-spacing:-.02em}
-.price small{font-family:var(--mono);font-size:12px;font-weight:400;letter-spacing:.06em;color:var(--ink-38);margin-left:4px}
-.tier ul{list-style:none;margin:20px 0 24px;padding:0;flex:1}
-.tier li{font-size:14px;color:var(--ink-60);padding:8px 0;border-bottom:1px solid var(--rule-soft)}
-.tier li:last-child{border-bottom:none}
-.tier .btn{text-align:center;width:100%}
-.sla{border:1px solid var(--rule);background:var(--paper-2);padding:20px 24px;margin-top:22px;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-@media(max-width:760px){.sla{grid-template-columns:1fr;gap:16px}}
-.sla dt{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--stamp);margin-bottom:5px}
-.sla dd{margin:0;font-size:14px;color:var(--ink-60)}
-
-/* ---------- form ---------- */
-.claim{background:var(--ink);color:var(--paper-2);border-top:1px solid var(--ink)}
-.claim .wrap{padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(56px,8vw,96px)}
-.claim-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,64px);align-items:start}
-@media(max-width:860px){.claim-grid{grid-template-columns:1fr;gap:36px}}
-.claim h2{color:var(--paper-2)}
-.claim .eyebrow{color:rgba(243,242,236,.45)}
-.claim p{color:rgba(243,242,236,.68);font-size:15.5px}
-.claim ul{list-style:none;padding:0;margin:22px 0 0}
-.claim ul li{font-family:var(--mono);font-size:12px;letter-spacing:.06em;
-  color:rgba(243,242,236,.68);padding:9px 0;border-bottom:1px solid rgba(243,242,236,.14)}
-.field{margin-bottom:16px}
-.field label{display:block;font-family:var(--mono);font-size:10px;font-weight:600;
-  letter-spacing:.14em;text-transform:uppercase;color:rgba(243,242,236,.5);margin-bottom:7px}
-.field input,.field select{
-  width:100%;background:transparent;border:1px solid rgba(243,242,236,.3);
-  color:var(--paper-2);font-family:var(--body);font-size:15px;padding:13px 14px;border-radius:0}
-.field select{font-family:var(--mono);font-size:13px}
-.field select option{background:#15181D;color:#F3F2EC}
-.field input::placeholder{color:rgba(243,242,236,.32)}
-.field input:focus,.field select:focus{outline:2px solid var(--stamp);outline-offset:1px;border-color:transparent}
-.submit{width:100%;background:var(--paper-2);color:var(--ink);border:1px solid var(--paper-2);
-  font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-  padding:16px;cursor:pointer;transition:background .16s,color .16s}
-.submit:hover:not(:disabled){background:var(--stamp);border-color:var(--stamp);color:var(--paper-2)}
-.submit:disabled{opacity:.5;cursor:default}
-.formnote{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;
-  color:rgba(243,242,236,.42);margin-top:14px;line-height:1.65}
-.msg{margin-top:14px;padding:13px 15px;font-size:14px;display:none}
-.msg.ok{display:block;background:rgba(74,107,67,.22);border-left:3px solid var(--verified);color:#DDE7DB}
-.msg.err{display:block;background:rgba(165,41,27,.2);border-left:3px solid var(--stamp);color:#F0D5D1}
-
-/* ---------- footer ---------- */
-footer{border-top:1px solid var(--rule);padding:36px 0 52px;font-size:13px;color:var(--ink-60)}
-footer .legal{max-width:76ch;margin-bottom:18px}
-footer a{color:var(--ink)}
-.fmeta{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-38)}
-:focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
+  @media(max-width:1000px){
+    section{padding:68px 0}
+    .hero{padding:56px 0 60px}
+    .hero-grid{grid-template-columns:1fr}
+    .stage{min-height:430px;margin-top:20px}
+    .stats-in{grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+    .stat{border-bottom:1px solid var(--line)}
+    .cards4{grid-template-columns:1fr 1fr}
+    .price3,.split{grid-template-columns:1fr}
+    .nav-links{display:none}
+  }
 </style>
 </head>
 <body>
 
-<header class="site">
-  <div class="wrap">
-    <a href="#top" class="mark">Lead<span>Machine</span> FL</a>
-    <nav class="nav">
-      <a href="#pipeline">Pipeline</a>
-      <a href="#scoring">Scoring</a>
-      <a href="#sample">Sample</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#claim" class="btn-sm">10 free leads</a>
-    </nav>
+<nav><div class="wrap nav-in">
+  <a class="logo" href="#">LEAD<span>/</span>MACHINE</a>
+  <div class="nav-links">
+    <a href="#pipeline">Pipeline</a><a href="#scoring">Scoring</a><a href="#rows">Live rows</a><a href="#pricing">Pricing</a><a href="/partners">For teams</a>
   </div>
-</header>
+  <a class="nav-cta" href="#claim">10 free leads</a>
+</div></nav>
 
-<main id="top">
+<header class="hero"><div class="wrap hero-grid">
+  <div>
+    <h1>Fresh distress data.<br>Called first<span class="dot-b">.</span></h1>
+    <div class="bar"></div>
+    <p class="lead">We pull Florida code-enforcement filings every morning, verify each owner against the Property Appraiser, and score the row. You get the list before it becomes a list.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-blue" href="#claim">Explore free sample <span class="arrow">→</span></a>
+      <a class="btn btn-line" href="#rows">View live rows <span class="arrow">→</span></a>
+    </div>
+  </div>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="wrap hero-grid">
+  <div class="stage" aria-hidden="true">
+    <div class="dots d1"></div><div class="dots d2"></div>
+    <svg class="flow" viewBox="0 0 700 480" fill="none" preserveAspectRatio="none">
+      <path d="M-20 320 C 140 300, 200 420, 360 400 S 620 300, 720 340" stroke="#2946F5" stroke-width="1.1" opacity=".8"/>
+      <path d="M-20 340 C 140 320, 210 445, 370 420 S 630 320, 720 360" stroke="#101112" stroke-width=".7" opacity=".28"/>
+      <path d="M180 40 C 300 20, 430 90, 560 60" stroke="#101112" stroke-width=".6" opacity=".2"/>
+    </svg>
+
+    <div class="card sig">
+      <span class="label l-green">Signal</span>
+      <div class="t">Absentee stock rising</div>
+    </div>
+
+    <div class="card trend">
+      <span class="label">Trend</span>
+      <div class="t">Case age over 90 days doubles contact rate.</div>
+      <span class="arr">→</span>
+    </div>
+
+    <div class="card rec">
+      <span class="label l-blue">Record · Miami-Dade</span>
+      <div class="t">144•• SW 164 TER</div>
+      <div class="m">owner verified · mailing GA · 134d open</div>
+      <div class="foot"><span>score</span><b>40</b></div>
+    </div>
+
+    <div class="card chart">
+      <div class="m"><span>HARVEST VOLUME</span><span>AUG 2026</span></div>
+      <svg width="100%" height="56" viewBox="0 0 214 56" fill="none">
+        <path d="M0 44 L18 40 36 46 54 30 72 34 90 22 108 28 126 16 144 22 162 10 180 18 198 8 214 12" stroke="#2946F5" stroke-width="1.4"/>
+        <circle cx="198" cy="8" r="2.4" fill="#2946F5"/>
+      </svg>
+    </div>
+
+    <div class="blue-block"></div>
+    <div class="coral-block"></div>
+    <div class="bw-block"></div>
+
+    <span class="plus" style="left:70px;top:30px">+</span>
+    <span class="plus" style="right:220px;bottom:10px">+</span>
+    <span class="sq b" style="left:40px;bottom:120px"></span>
+    <span class="sq" style="right:40px;top:170px"></span>
+    <div class="side-cap">Fresh&nbsp;data&nbsp;changes&nbsp;deals</div>
+  </div>
+</div></header>
+
+<div class="stats"><div class="wrap stats-in">
+  <div class="stat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#101112" stroke-width="1.4"><rect x="4" y="3" width="16" height="18"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+    <div><div class="n">3,361</div><div class="k">Leads</div><div class="s">In stock, sellable</div></div>
+  </div>
+  <div class="stat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#101112" stroke-width="1.4"><circle cx="12" cy="12" r="2"/><path d="M12 4a8 8 0 0 1 8 8M12 8a4 4 0 0 1 4 4"/></svg>
+    <div><div class="n">4</div><div class="k">Sources</div><div class="s">County &amp; city systems</div></div>
+  </div>
+  <div class="stat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#101112" stroke-width="1.4"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
+    <div><div class="n">1,224</div><div class="k">Absentee</div><div class="s">Mailing ≠ property</div></div>
+  </div>
+  <div class="stat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#101112" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+    <div><div class="n">06:00</div><div class="k">Daily</div><div class="s">This morning's harvest</div></div>
+  </div>
+  <div class="stat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#101112" stroke-width="1.4"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
+    <div><div class="n">40</div><div class="k">Score ceiling</div><div class="s">Published arithmetic</div></div>
+  </div>
+</div></div>
+
+<section id="rows"><div class="wrap">
+  <div class="sec-head">
     <div>
-      <span class="livetag"><span class="dot"></span>4 public-record sources · updated this morning</span>
-      <h1>Motivated sellers,<br>filed under <em>public record</em>.</h1>
-      <p class="lede">Every morning we pull open code-enforcement cases from Florida county and city systems, match each parcel against the Property Appraiser for owner and absentee status, and score it. You get clean rows with the harvest date attached. You own the outreach.</p>
-      <div class="cta-row">
-        <a href="#claim" class="btn btn-primary">Get 10 free leads</a>
-        <a href="#sample" class="btn btn-ghost">See a real row</a>
-      </div>
+      <span class="label l-blue">Live rows</span>
+      <h2>This morning's shelf. Masked here<span class="dot-b">.</span></h2>
     </div>
-
-    <!-- signature element: the lead as a county record card -->
-    <article class="record" aria-label="Example scored lead record">
-      <div class="record-top"><span>Record · Miami-Dade</span><span>Folio 30-49••-•••-••••</span></div>
-      <div class="record-body">
-        <div class="stamp">Open<br>violation</div>
-        <div class="record-addr">144•• SW<br>164 Terrace</div>
-        <div class="record-sub">Miami-Dade County · ZIP 33177</div>
-        <dl class="record-rows">
-          <div class="rrow"><dt>Owner</dt><dd><span class="redact">Hxxxxx Fxxxxxxxx</span></dd></div>
-          <div class="rrow"><dt>Mailing</dt><dd>Out of state · <span class="redact">Axxxxxx GA</span></dd></div>
-          <div class="rrow"><dt>Case age</dt><dd>134 days open</dd></div>
-          <div class="rrow" style="border-bottom:none"><dt>Signals</dt><dd>
-            <span class="chip chip-v">Code violation</span><span class="chip chip-a">Absentee</span><span class="chip chip-a">Out-of-state</span>
-          </dd></div>
-        </dl>
-        <div class="record-score">
-          <div><span class="eyebrow">Score</span><div class="score-num">40</div></div>
-          <div style="text-align:right"><span class="eyebrow">Harvested</span>
-            <div style="font-family:var(--mono);font-size:12.5px;margin-top:6px">11 AUG 2026</div></div>
-        </div>
-      </div>
-    </article>
+    <a class="view-all" href="#claim">Get them unmasked →</a>
   </div>
-</section>
-
-<!-- SOURCES -->
-<div class="sources">
-  <div class="wrap">
-    <b>Sourced from</b>
-    <span>Miami-Dade County</span><span>Lee County</span><span>City of Orlando</span><span>City of Deerfield Beach</span>
-    <span>+ County Property Appraisers</span>
-  </div>
-</div>
-
-<!-- PIPELINE -->
-<section class="band" id="pipeline">
-  <div class="wrap">
-    <div class="band-head"><span class="eyebrow">The pipeline</span><span class="rulefill"></span></div>
-    <h2 style="max-width:16ch;margin-bottom:14px">From county filing to closable lead</h2>
-    <p class="lede" style="margin-bottom:38px">No recycled lists. Every row starts as a government record and carries the date we pulled it.</p>
-    <div class="steps">
-      <div class="step">
-        <span class="step-n">Step 01 · Daily</span>
-        <h3>Harvest</h3>
-        <p>Automated pulls from county and city open-data and code-enforcement systems each morning. New sources are added as their portals are onboarded.</p>
-      </div>
-      <div class="step">
-        <span class="step-n">Step 02 · Same run</span>
-        <h3>Match &amp; score</h3>
-        <p>Each parcel is matched to the Property Appraiser record for owner name, mailing address and ZIP. Absentee status is derived by comparing mailing address to the property address. Signals stack into a score.</p>
-      </div>
-      <div class="step">
-        <span class="step-n">Step 03 · On order</span>
-        <h3>Delivered</h3>
-        <p>CSV filtered to your counties, ZIPs and minimum score. Shared leads go to a maximum of three buyers. Exclusive rows are flagged and never resold.</p>
-      </div>
+  <div class="cards4">
+    <div class="icard">
+      <div class="top"><span class="label l-blue">Record</span><div class="t">144•• SW 164 TER, Miami-Dade</div><div class="s">Violation · absentee · owner mails from Georgia.</div></div>
+      <div class="viz viz-blue"><span class="arr" style="color:#fff">→</span><span class="score-big">40</span></div>
+    </div>
+    <div class="icard">
+      <div class="top"><span class="label l-gray">Record</span><div class="t">15•• Miami Gardens Dr</div><div class="s">Two open cases, 210 days running. Absentee owner.</div></div>
+      <div class="viz viz-dark"><span class="arr">→</span><span class="score-big">37</span></div>
+    </div>
+    <div class="icard">
+      <div class="top"><span class="label l-green">Signal</span><div class="t">Absentee stock: 1,224 rows</div><div class="s">Owners who don't live at the property — across four counties.</div></div>
+      <div class="viz viz-green"><span class="arr">→</span><span class="score-big">+10</span></div>
+    </div>
+    <div class="icard">
+      <div class="top"><span class="label l-gray">Trend watch</span><div class="t">Case age is the quiet signal</div><div class="s">90+ days open means the county is already applying pressure.</div></div>
+      <div class="viz viz-bw"><span class="coral-tag"></span><span class="arr" style="color:#fff">→</span></div>
     </div>
   </div>
-</section>
+</div></section>
 
-<!-- SCORING -->
-<section class="band" id="scoring">
-  <div class="wrap">
-    <div class="band-head"><span class="eyebrow">Scoring</span><span class="rulefill"></span></div>
-    <div class="score-split">
-      <div>
-        <h2 style="margin-bottom:18px">The score is<br>arithmetic, not<br>a black box.</h2>
-        <p class="lede">Most list vendors hand you a "motivation score" with no definition behind it. Ours is a published sum. You can audit any row against the county record yourself — and you should, before you spend a dollar on outreach.</p>
-        <p class="lede" style="margin-top:18px">Today's ceiling is 40. It rises as we onboard tax-delinquency and probate sources; we don't price signals we can't yet deliver.</p>
-      </div>
-      <div class="rubric">
-        <div class="rubric-h"><span>Signal</span><span>Points</span></div>
-        <div class="rline"><span>Open code-enforcement case</span><b>+15</b></div>
-        <div class="rline"><span>Absentee owner — mailing ≠ property address</span><b>+10</b></div>
-        <div class="rline"><span>Owner mailing address out of state</span><b>+8</b></div>
-        <div class="rline"><span>Case open longer than 90 days</span><b>+7</b></div>
-        <div class="rline"><span>Two or more open cases on the parcel</span><b>+5</b></div>
-        <div class="rline" style="background:rgba(21,24,29,.05)"><span><b style="font-family:var(--body);font-size:14.5px">Maximum available today</b></span><b>40</b></div>
-      </div>
+<section class="alt" id="scoring"><div class="wrap">
+  <div class="sec-head"><div>
+    <span class="label l-blue">Scoring</span>
+    <h2>Arithmetic, not a black box<span class="dot-b">.</span></h2>
+  </div></div>
+  <div class="score-tbl">
+    <div class="score-row"><span>Open code-enforcement case</span><span class="pts">+15</span></div>
+    <div class="score-row"><span>Absentee owner — mailing ≠ property address</span><span class="pts">+10</span></div>
+    <div class="score-row"><span>Owner mailing address out of state</span><span class="pts">+8</span></div>
+    <div class="score-row"><span>Case open longer than 90 days</span><span class="pts">+7</span></div>
+    <div class="score-row"><span>Two or more open cases on the parcel</span><span class="pts">+5</span></div>
+    <div class="score-row"><span style="font-weight:600">Maximum available today</span><span class="pts">40</span></div>
+  </div>
+  <p class="score-note">A published sum you can audit against the county record yourself — and you should, before you spend a dollar on outreach. The ceiling rises only when we ship new signals; we never price what we can't deliver.</p>
+</div></section>
+
+<section id="pricing"><div class="wrap">
+  <div class="sec-head"><div>
+    <span class="label l-blue">Pricing</span>
+    <h2>Pay per lead, by signal depth<span class="dot-b">.</span></h2>
+  </div></div>
+  <div class="price3">
+    <div class="plan">
+      <span class="label l-gray">Single signal</span>
+      <div class="price">$15</div><div class="per">PER LEAD · SCORE 15–24</div>
+      <ul><li>One verified distress signal</li><li>Address + county case reference</li><li>Owner name where the record matches</li></ul>
+      <a class="btn btn-line" href="#">Buy single <span class="arrow">→</span></a>
+    </div>
+    <div class="plan f">
+      <span class="label l-blue">Cross-verified</span>
+      <div class="price">$30</div><div class="per">PER LEAD · SCORE 25–40</div>
+      <ul><li>Violation + absentee, minimum</li><li>Owner and ZIP verified against the Appraiser</li><li>Case age and mailing state included</li></ul>
+      <a class="btn btn-blue" href="#">Buy cross-verified <span class="arrow">→</span></a>
+    </div>
+    <div class="plan">
+      <span class="label l-gray">Exclusive &amp; standing</span>
+      <div class="price" style="font-size:26px;padding:12px 0 6px">By volume</div><div class="per">PER COUNTY · PILOT FIRST</div>
+      <ul><li>Rows never resold</li><li>Weekly delivery on your ZIPs</li><li>Webhook to your CRM, offer-link attribution</li></ul>
+      <a class="btn btn-line" href="#partners">Start a pilot <span class="arrow">→</span></a>
     </div>
   </div>
-</section>
+</div></section>
 
-<!-- SAMPLE -->
-<section class="band" id="sample">
-  <div class="wrap">
-    <div class="band-head"><span class="eyebrow">Live inventory</span><span class="rulefill"></span>
-      <span class="eyebrow" style="color:var(--verified)">Harvest 11 Aug 2026</span></div>
-    <h2 style="max-width:15ch;margin-bottom:14px">What a row looks like</h2>
-    <p class="lede" style="margin-bottom:32px">Real rows from this week's Miami-Dade harvest, masked here. The free sample arrives unmasked.</p>
-    <div class="tablewrap">
-      <table>
-        <thead><tr>
-          <th>Address</th><th>Owner</th><th>ZIP</th><th>Signals</th><th style="text-align:right">Score</th><th>Harvested</th>
-        </tr></thead>
-        <tbody>
-          <tr><td class="addr">144•• SW 164 TER</td><td><span class="redact">Hxxx Fxxxxxxx</span></td><td class="addr">33177</td>
-            <td><span class="chip chip-v">Violation</span><span class="chip chip-a">Absentee</span><span class="chip chip-a">Out-of-state</span></td><td class="sc">40</td><td class="dt">11 Aug</td></tr>
-          <tr><td class="addr">65•• SW 164 CT</td><td><span class="redact">Exxx &amp; Pxxx Rxxxxx</span></td><td class="addr">33193</td>
-            <td><span class="chip chip-v">Violation</span><span class="chip chip-a">Absentee</span><span class="chip chip-v">180d open</span></td><td class="sc">32</td><td class="dt">11 Aug</td></tr>
-          <tr><td class="addr">83•• SW 39 ST</td><td><span class="redact">Rxxx Vxxx Axxx</span></td><td class="addr">33155</td>
-            <td><span class="chip chip-v">Violation</span><span class="chip chip-a">Absentee</span></td><td class="sc">25</td><td class="dt">11 Aug</td></tr>
-          <tr><td class="addr">15•• MIAMI GARDENS DR</td><td><span class="redact">Lxxx Gxxxxx</span></td><td class="addr">33179</td>
-            <td><span class="chip chip-v">2 open cases</span><span class="chip chip-a">Absentee</span><span class="chip chip-v">210d open</span></td><td class="sc">37</td><td class="dt">11 Aug</td></tr>
-          <tr><td class="addr">92•• NW 7 AVE</td><td><span class="redact">Mxxxxx Sxxxxxx</span></td><td class="addr">33150</td>
-            <td><span class="chip chip-v">Violation</span></td><td class="sc">15</td><td class="dt">11 Aug</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="note"><b>Why the top rows convert:</b> an owner who doesn't live at the property, holding an open county case that's been running for months, is the textbook motivated seller. The county is already applying pressure and the owner has no day-to-day attachment to the asset. A 15 is a lead. A 40 is a phone call worth making first.</p>
+<section class="alt" id="claim"><div class="wrap split">
+  <div>
+    <span class="label l-blue">Free · no card</span>
+    <h2 style="margin-top:12px">10 scored leads, cut to your ZIPs<span class="dot-b">.</span></h2>
+    <p class="claim-note">Full addresses, owner names and case references — unmasked, from this week's harvest. In your inbox within minutes.</p>
+    <p class="claim-note">We never contact the property owners in your list. Outreach — and its compliance — is yours.</p>
   </div>
-</section>
-
-<!-- COMPARE -->
-<section class="band">
-  <div class="wrap">
-    <div class="band-head"><span class="eyebrow">Straight answer</span><span class="rulefill"></span></div>
-    <h2 style="max-width:20ch;margin-bottom:14px">"I already pay for a data subscription."</h2>
-    <p class="lede" style="margin-bottom:34px">Then you should keep it. A subscription platform is the right tool for searching a whole market on your own time. This is a different job — here's the honest split.</p>
-    <div class="compare">
-      <div class="cbox">
-        <h3>A flat-rate data platform</h3>
-        <ul>
-          <li>Unlimited searching for a fixed monthly fee</li>
-          <li>Nationwide coverage and comps built in</li>
-          <li>Records refresh on the vendor's schedule — often monthly</li>
-          <li>You build and maintain the filters yourself</li>
-          <li>Every subscriber sees the same records you do</li>
-        </ul>
-      </div>
-      <div class="cbox mine">
-        <h3>LeadMachine FL</h3>
-        <ul>
-          <li>Pulled this morning, with the harvest date on every row</li>
-          <li>Two Florida counties plus two city programs, deep rather than wide</li>
-          <li>Code-enforcement case age — rarely exposed by subscription tools</li>
-          <li>Filtering done for you; you receive a working list, not a query</li>
-          <li>Shared leads capped at three buyers, or bought exclusive</li>
-        </ul>
-      </div>
-    </div>
-    <p class="note">If you work all of Florida on a broad net, a subscription wins on cost. If you work specific ZIPs and want to be first to a case before it's been called twenty times, freshness is the whole product.</p>
+  <div class="form-card">
+    <label for="em">Work email</label><input id="em" type="email" placeholder="you@company.com">
+    <label for="ct">Counties or ZIPs you buy in</label><input id="ct" type="text" placeholder="Broward, 33064…">
+    <label for="vl">Leads per month</label>
+    <select id="vl"><option>1 – 25</option><option>26 – 100</option><option>101 – 300</option><option>300+</option></select>
+    <button class="btn btn-blue">Send my 10 leads <span class="arrow">→</span></button>
+    <p class="form-fine">We use your email for the sample and harvest updates. Unsubscribe any time.</p>
   </div>
-</section>
+</div></section>
 
-<!-- PRICING -->
-<section class="band" id="pricing">
-  <div class="wrap">
-    <div class="band-head"><span class="eyebrow">Pricing</span><span class="rulefill"></span></div>
-    <h2 style="max-width:18ch;margin-bottom:14px">Pay per lead, by signal depth</h2>
-    <p class="lede" style="margin-bottom:34px">Set your quantity at checkout. Start with a small batch, measure your own contact rate, then scale the tier that pays.</p>
-    <div class="tiers">
-      <div class="tier">
-        <span class="tier-name">Single signal</span>
-        <div class="price">$15<small>/ lead</small></div>
-        <ul>
-          <li>One verified distress signal</li>
-          <li>Property address + county case reference</li>
-          <li>Owner name where the Appraiser record matches</li>
-          <li>Score 15–24</li>
-        </ul>
-        <a href="https://buy.stripe.com/14A14nbfPeS75eegLE7Vm01" class="btn btn-ghost">Buy single-signal</a>
-      </div>
-      <div class="tier pick">
-        <span class="tier-name">Cross-verified</span>
-        <div class="price">$30<small>/ lead</small></div>
-        <ul>
-          <li>Code violation + absentee owner, minimum</li>
-          <li>Owner name and ZIP verified against the Property Appraiser</li>
-          <li>Case age and mailing-state included</li>
-          <li>Score 25–40</li>
-        </ul>
-        <a href="https://buy.stripe.com/aFa7sLdnX11h2222UO7Vm00" class="btn btn-primary">Buy cross-verified</a>
-      </div>
-      <div class="tier">
-        <span class="tier-name">Exclusive &amp; stacked · waitlist</span>
-        <div class="price">POA</div>
-        <ul>
-          <li>Exclusive rows, never resold to another buyer</li>
-          <li>Standing weekly delivery on your ZIPs</li>
-          <li>Tax-delinquency and probate signals as sources onboard</li>
-          <li>Priced per county and volume</li>
-        </ul>
-        <a href="mailto:leadmachine@agentmail.to?subject=Exclusive%20%2F%20standing%20order%20enquiry" class="btn btn-ghost">Talk to us</a>
-      </div>
-    </div>
-    <dl class="sla">
-      <div><dt>Delivery</dt><dd>CSV emailed within 4 business hours of payment, Mon–Fri. Weekend orders go out Monday morning.</dd></div>
-      <div><dt>Order size</dt><dd>Batches to 150 leads are filled from current stock. Larger orders are filled across consecutive daily harvests — we'll confirm the schedule before charging.</dd></div>
-      <div><dt>Replacement</dt><dd>Any row where the owner name or address doesn't match the county record is replaced free. Flag it within 7 days.</dd></div>
-    </dl>
+<section class="alt" id="faq"><div class="wrap">
+  <div class="sec-head"><div><span class="label l-blue">FAQ · live data</span><h2>Everything clear before you buy<span class="dot-b">.</span></h2></div><span class="live-note" id="faq-live">Checking the shelf…</span></div>
+  <div class="faq-grid">
+    <div class="faq-item"><h3>What exactly is in a lead?</h3><p>Thirteen CSV fields: lead reference, owner name, property address, city, state, ZIP, county, signals, case opened, case age, mailing state, first seen and an outcome link. Offer attribution is appended when a buyer has configured it.</p></div>
+    <div class="faq-item"><h3>Where does the data come from?</h3><p>Public Florida city and county code-enforcement records, matched to Property Appraiser tax rolls where owner and mailing data are available. We do not scrape HTML search UIs.</p></div>
+    <div class="faq-item"><h3>Which counties are live today?</h3><p id="faq-counties">Loading live counties…</p></div>
+    <div class="faq-item"><h3>How does the free sample work?</h3><p>Tell the concierge your county, volume and work email. It checks the live shelf, writes a chat-sourced request and sends a 10-record CSV sample to your inbox.</p></div>
+    <div class="faq-item"><h3>What is the replacement policy?</h3><p>If a record is wrong or materially stale, use its outcome link and tell us what failed. We would rather retire a bad row than resell it.</p></div>
+    <div class="faq-item"><h3>How does a team pilot work?</h3><p>Teams can request a county and volume pilot with CSV, portal or webhook delivery. Pilot terms are a conversation; enterprise pricing is not published here.</p></div>
   </div>
-</section>
+</div></section>
 
-<!-- CLAIM / CAPTURE -->
-<section class="claim" id="claim">
-  <div class="wrap">
-    <div class="claim-grid">
-      <div>
-        <div class="band-head" style="margin-bottom:22px"><span class="eyebrow">Free · no card</span></div>
-        <h2>10 scored leads,<br>filtered to your ZIPs</h2>
-        <p style="margin-top:18px">Full addresses, owner names, ZIPs and case references — unmasked, from this week's harvest. Tell us where you buy and we'll cut the sample to match.</p>
-        <ul>
-          <li>Sent by email within one business day</li>
-          <li>No card, no subscription, no call required</li>
-          <li>Sample rows are shared — buy to lock exclusivity</li>
-        </ul>
-      </div>
-      <div>
-        <form id="leadForm" novalidate>
-          <div class="field">
-            <label for="email">Work email</label>
-            <input type="email" id="email" name="email" placeholder="you@company.com" required autocomplete="email">
-          </div>
-          <div class="field">
-            <label for="counties">Counties or ZIPs you buy in</label>
-            <input type="text" id="counties" name="counties" placeholder="Miami-Dade, 33177, 33193" required>
-          </div>
-          <div class="field">
-            <label for="volume">Leads you'd use per month</label>
-            <select id="volume" name="volume">
-              <option value="">Select a range</option>
-              <option value="1-25">1 – 25</option>
-              <option value="26-100">26 – 100</option>
-              <option value="101-300">101 – 300</option>
-              <option value="300+">300+</option>
-            </select>
-          </div>
-          <button type="submit" class="submit" id="submitBtn">Send my 10 leads</button>
-          <div class="msg" id="formMsg" role="status" aria-live="polite"></div>
-          <p class="formnote">We use your email to send the sample and occasional harvest updates. Unsubscribe any time. We never contact the property owners in your list — that's your job, and your compliance responsibility.</p>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
+<button class="chat-toggle" id="chat-toggle">Ask the concierge →</button>
+<div class="chat" id="chat" aria-live="polite"><div class="chat-head"><span>CONCIERGE · LIVE SHELF</span><button class="chat-close" id="chat-close">×</button></div><div class="chat-log" id="chat-log"><div class="bubble bot">Where do you invest? I'll tell you exactly what's on the shelf right now.</div></div><form class="chat-form" id="chat-form"><input id="chat-input" autocomplete="off" placeholder="County, ZIP, or a question…"><button>Send</button></form></div>
 
-</main>
-
-<footer>
-  <div class="wrap">
-    <p class="legal">Data is compiled from public Florida county and city records and county Property Appraiser systems. <b>We sell data only.</b> No contact is made with any property owner by LeadMachine FL, and none is implied. All homeowner outreach — and its compliance with the TCPA, state do-not-call rules and any other applicable law — is the responsibility of the buyer. Records reflect government data as of the stated harvest date and are not warranted for any particular purpose.</p>
-    <p class="fmeta">© 2026 LeadMachine FL · <a href="/terms.html">Data licence &amp; terms</a> · <a href="mailto:leadmachine@agentmail.to">leadmachine@agentmail.to</a></p>
-  </div>
-</footer>
+<footer><div class="wrap">
+  <p class="legal">Data is compiled from public Florida county and city records and Property Appraiser systems. We sell data only — no contact is made with any property owner by LeadMachine FL. All homeowner outreach and its compliance with the TCPA and applicable law is the buyer's responsibility.</p>
+  <p>© 2026 LEAD/MACHINE FL &nbsp;·&nbsp; <a href="#">Data licence &amp; terms</a> &nbsp;·&nbsp; leadmachine@agentmail.to</p>
+</div></footer>
 
 <script>
-(function(){
-  var form=document.getElementById('leadForm'),
-      btn=document.getElementById('submitBtn'),
-      msg=document.getElementById('formMsg');
-
-  function show(kind,text){ msg.className='msg '+kind; msg.textContent=text; }
-
-  form.addEventListener('submit',function(e){
-    e.preventDefault();
-    var email=form.email.value.trim(),
-        counties=form.counties.value.trim(),
-        volume=form.volume.value;
-
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){
-      show('err','That email address doesn’t look right. Check it and try again.');
-      form.email.focus(); return;
-    }
-    if(counties.length<2){
-      show('err','Add at least one county or ZIP so we can filter your sample.');
-      form.counties.focus(); return;
-    }
-
-    btn.disabled=true; btn.textContent='Sending…'; show('','');
-
-    fetch('/api/lead',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        email:email, counties:counties, volume:volume,
-        source:'landing', referrer:document.referrer||'direct'
-      })
-    })
-    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
-    .then(function(res){
-      if(!res.ok) throw new Error(res.d && res.d.error ? res.d.error : 'request failed');
-      form.reset();
-      show('ok','Got it. Your 10 leads are on the way to '+email+' — within one business day.');
-      btn.textContent='Request received';
-    })
-    .catch(function(){
-      btn.disabled=false; btn.textContent='Send my 10 leads';
-      show('err','That didn’t send. Email leadmachine@agentmail.to and we’ll sort it out.');
-    });
-  });
+(async function(){
+  const $=id=>document.getElementById(id); let step='county', county='', volume='', email='';
+  try{
+    const r=await fetch('/api/stock',{cache:'no-store'}), s=await r.json();
+    const total=(s.counties||[]).reduce((n,c)=>n+c.total,0), cross=(s.counties||[]).reduce((n,c)=>n+c.cross,0);
+    const statNums=document.querySelectorAll('.stat .n'); if(statNums[0])statNums[0].textContent=total.toLocaleString(); if(statNums[2])statNums[2].textContent=cross.toLocaleString();
+    const names=(s.counties||[]).map(c=>`${c.county}: ${c.total.toLocaleString()} total (${c.single} single / ${c.cross} cross)`).join(' · ');
+    $('faq-counties').textContent=names||'No live counties returned.'; $('faq-live').textContent='Live shelf · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  }catch(e){ $('faq-counties').textContent='The live shelf is temporarily unavailable; no inventory number is shown.'; }
+  const chat=$('chat'), log=$('chat-log'); $('chat-toggle').onclick=()=>chat.classList.add('open'); $('chat-close').onclick=()=>chat.classList.remove('open');
+  function add(text,who){const d=document.createElement('div');d.className='bubble '+who;d.textContent=text;log.appendChild(d);log.scrollTop=log.scrollHeight;}
+  $('chat-form').onsubmit=async e=>{e.preventDefault();const input=$('chat-input'),msg=input.value.trim();if(!msg)return;input.value='';add(msg,'user');
+    try{
+      if(step==='county'){county=msg;const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'message',step,message:msg})});const x=await r.json();add(x.answer||x.error,'bot');step='volume';}
+      else if(step==='volume'){volume=msg;const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'message',step,message:msg})});const x=await r.json();add(x.answer||x.error,'bot');step='email';}
+      else if(step==='email'){email=msg;const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'message',step,message:msg})});const x=await r.json();add(x.answer||x.error,'bot');if(x.valid)step='confirm';}
+      else if(step==='confirm'){if(/^y(es)?$/i.test(msg)){const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'submit',email,counties:county,volume})});const x=await r.json();add(x.answer||x.error,'bot');step='done';}else add('No problem. Say yes when you want me to send it.','bot');}
+      else {const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'message',step:'freeform',message:msg})});const x=await r.json();add(x.answer||x.error,'bot');}
+    }catch(err){add('The shelf is taking a moment. Please try again.','bot');}
+  };
 })();
 </script>
 </body>

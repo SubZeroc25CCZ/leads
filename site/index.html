@@ -174,6 +174,10 @@
   .form-card input:focus,.form-card select:focus{outline:2px solid var(--blue);outline-offset:-1px}
   .form-card .btn{width:100%;justify-content:center;margin-top:28px;border:0;cursor:pointer}
   .form-fine{margin-top:14px;font-size:12px;color:var(--gray)}
+  .form-status{margin-top:16px;padding:12px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.5;border-left:3px solid var(--blue);background:rgba(0,0,0,.04)}
+  .form-status.ok{border-left-color:#1f7a4d;background:rgba(31,122,77,.08)}
+  .form-status.bad{border-left-color:#a5291b;background:rgba(165,41,27,.08)}
+  .form-card input.invalid,.form-card select.invalid{outline:2px solid #a5291b;outline-offset:-1px}
   .claim-note{margin-top:20px;font-size:14px;color:var(--gray);max-width:420px}
   .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.faq-item{border-top:1px solid var(--line);padding:18px 0}.faq-item h3{font-family:var(--mono);font-size:15px;margin-bottom:7px}.faq-item p{font-size:14px;color:var(--gray);max-width:560px}.live-note{font-family:var(--mono);font-size:11px;color:var(--gray);margin-top:12px}
   .chat-toggle{position:fixed;right:24px;bottom:24px;z-index:40;background:var(--blue);color:#fff;border:0;padding:15px 18px;font-family:var(--mono);font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(16,17,18,.18)}.chat{position:fixed;right:24px;bottom:78px;width:min(380px,calc(100vw - 32px));background:#fff;border:1px solid var(--ink);z-index:40;box-shadow:0 18px 50px rgba(16,17,18,.18);display:none}.chat.open{display:block}.chat-head{background:var(--dark);color:#fff;padding:16px 18px;font-family:var(--mono);font-size:13px;display:flex;justify-content:space-between}.chat-close{background:none;border:0;color:#fff;font-size:18px;cursor:pointer}.chat-log{height:280px;overflow:auto;padding:14px}.bubble{max-width:88%;padding:10px 12px;margin:0 0 10px;font-size:13px;line-height:1.5}.bubble.bot{background:var(--green)}.bubble.user{margin-left:auto;background:#f2f3f5}.chat-form{display:flex;border-top:1px solid var(--line)}.chat-form input{flex:1;border:0;padding:13px;font:14px var(--body);min-width:0}.chat-form button{border:0;background:var(--blue);color:#fff;padding:0 15px;font-family:var(--mono);cursor:pointer}
@@ -364,14 +368,15 @@
     <p class="claim-note">Full addresses, owner names and case references — unmasked, from this week's harvest. In your inbox within minutes.</p>
     <p class="claim-note">We never contact the property owners in your list. Outreach — and its compliance — is yours.</p>
   </div>
-  <div class="form-card">
-    <label for="em">Work email</label><input id="em" type="email" placeholder="you@company.com">
-    <label for="ct">Counties or ZIPs you buy in</label><input id="ct" type="text" placeholder="Broward, 33064…">
+  <form class="form-card" id="claim-form" novalidate>
+    <label for="em">Work email</label><input id="em" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+    <label for="ct">Counties or ZIPs you buy in</label><input id="ct" name="counties" type="text" placeholder="Broward, 33064…" required>
     <label for="vl">Leads per month</label>
-    <select id="vl"><option>1 – 25</option><option>26 – 100</option><option>101 – 300</option><option>300+</option></select>
-    <button class="btn btn-blue">Send my 10 leads <span class="arrow">→</span></button>
+    <select id="vl" name="volume"><option>1 – 25</option><option>26 – 100</option><option>101 – 300</option><option>300+</option></select>
+    <button class="btn btn-blue" id="claim-btn" type="submit">Send my 10 leads <span class="arrow">→</span></button>
+    <p class="form-status" id="claim-status" role="status" aria-live="polite" hidden></p>
     <p class="form-fine">We use your email for the sample and harvest updates. Unsubscribe any time.</p>
-  </div>
+  </form>
 </div></section>
 
 <section class="alt" id="faq"><div class="wrap">
@@ -404,6 +409,33 @@
     const names=(s.counties||[]).map(c=>`${c.county}: ${c.total.toLocaleString()} total (${c.single} single / ${c.cross} cross)`).join(' · ');
     $('faq-counties').textContent=names||'No live counties returned.'; $('faq-live').textContent='Live shelf · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
   }catch(e){ $('faq-counties').textContent='The live shelf is temporarily unavailable; no inventory number is shown.'; }
+  // ---- #claim form: the primary conversion path ----
+  const cf=$('claim-form'), cs=$('claim-status');
+  const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  function status(msg,kind){cs.hidden=false;cs.textContent=msg;cs.className='form-status'+(kind?' '+kind:'');}
+  if(cf){
+    cf.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const em=$('em'), ct=$('ct'), btn=$('claim-btn');
+      const email=em.value.trim(), counties=ct.value.trim(), volume=$('vl').value;
+      em.classList.remove('invalid'); ct.classList.remove('invalid');
+      if(!emailOk(email)){em.classList.add('invalid');em.focus();return status('Enter a valid work email address.','bad');}
+      if(counties.length<2){ct.classList.add('invalid');ct.focus();return status('Add at least one county or ZIP.','bad');}
+      btn.disabled=true; const label=btn.innerHTML; btn.textContent='Checking the shelf…';
+      status('Checking the live shelf…');
+      try{
+        const r=await fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({email,counties,volume,source:'landing_claim',referrer:document.referrer||''})});
+        const x=await r.json();
+        if(!r.ok) status(x.error||'Could not send that just now. Please try again.','bad');
+        else if(x.covered===false) status(x.message,'ok');
+        else status(x.message||'Sample sent — check your inbox.','ok');
+        if(r.ok&&x.covered!==false){em.value='';ct.value='';}
+      }catch(err){ status('Network problem — nothing was sent. Please try again.','bad'); }
+      btn.disabled=false; btn.innerHTML=label;
+    });
+  }
+
   const chat=$('chat'), log=$('chat-log'); $('chat-toggle').onclick=()=>chat.classList.add('open'); $('chat-close').onclick=()=>chat.classList.remove('open');
   function add(text,who){const d=document.createElement('div');d.className='bubble '+who;d.textContent=text;log.appendChild(d);log.scrollTop=log.scrollHeight;}
   $('chat-form').onsubmit=async e=>{e.preventDefault();const input=$('chat-input'),msg=input.value.trim();if(!msg)return;input.value='';add(msg,'user');

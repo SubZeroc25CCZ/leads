@@ -52,7 +52,7 @@ async function sendSample(email, counties, volume) {
   const csvRes = await fetch(url, { headers: { "x-api-key": adminKey } });
   if (!csvRes.ok) throw new Error("sample export failed");
   const csv = await csvRes.text();
-  const mail = await fetch(`https://api.agentmail.to/v0/inboxes/${encodeURIComponent(process.env.AGENTMAIL_INBOX || "leadmachine@agentmail.to")}/messages`, {
+  const mail = await fetch(`https://api.agentmail.to/v0/inboxes/${encodeURIComponent(process.env.AGENTMAIL_INBOX || "leadmachine@agentmail.to")}/messages/send`, {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.AGENTMAIL_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({

@@ -212,8 +212,10 @@
     .form-card{padding:24px}
     .hero-ctas{flex-direction:column;align-items:stretch}
     .hero-ctas .btn{justify-content:center}
-    .chat-toggle{right:14px;left:auto;bottom:calc(14px + env(safe-area-inset-bottom));padding:13px 15px;font-size:12px}
-    .chat{right:10px;left:10px;width:auto;bottom:calc(64px + env(safe-area-inset-bottom))}
+    /* The trigger participates in page flow on phones. It cannot cover hero
+       art, cards, form controls or footer copy; only the opened chat is modal. */
+    .chat-toggle{position:relative;right:auto;left:auto;bottom:auto;display:block;margin:0 18px 16px auto;padding:13px 15px;font-size:12px}
+    .chat{right:10px;left:10px;width:auto;bottom:calc(12px + env(safe-area-inset-bottom))}
     .chat-log{height:min(46vh,260px)}
     footer{padding-bottom:calc(44px + 76px)}
   }
@@ -285,7 +287,7 @@
     <div class="side-cap">Fresh&nbsp;data&nbsp;changes&nbsp;deals</div>
   </div>
 </div></header>
-
+<button class="chat-toggle" id="chat-toggle" type="button">Ask the concierge →</button>
 <div class="stats"><div class="wrap stats-in">
   <div class="stat">
     <svg viewBox="0 0 24 24" fill="none" stroke="#101112" stroke-width="1.4"><rect x="4" y="3" width="16" height="18"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
@@ -409,8 +411,6 @@
     <div class="faq-item"><h3>How does a team pilot work?</h3><p>Teams can request a county and volume pilot with CSV, portal or webhook delivery. Pilot terms are a conversation; enterprise pricing is not published here.</p></div>
   </div>
 </div></section>
-
-<button class="chat-toggle" id="chat-toggle">Ask the concierge →</button>
 <div class="chat" id="chat" aria-live="polite"><div class="chat-head"><span>CONCIERGE · LIVE SHELF</span><button class="chat-close" id="chat-close">×</button></div><div class="chat-log" id="chat-log"><div class="bubble bot">Where do you invest? I'll tell you exactly what's on the shelf right now.</div></div><form class="chat-form" id="chat-form"><input id="chat-input" autocomplete="off" placeholder="County, ZIP, or a question…"><button>Send</button></form></div>
 
 <footer><div class="wrap">

@@ -275,7 +275,7 @@
     <div class="eyebrow">Florida · Distressed-Property Data Leads</div>
     <h1 class="brand">LeadMachine <span class="fl">FL</span></h1>
     <p class="lede">מכונת לידים אוטומטית לנדל"ן במצוקה: איסוף יומי מ-public records, ניקוד, והפצה לקונים במספר ורטיקלים. הדף הזה הוא תמונת המצב, המפה העסקית ותוכנית־האב — במסמך אחד.</p>
-    <div class="snapshot-line">Snapshot חי מ-D1 (leadmachine-db): <b>19.08.2026, 10:40 UTC — קציר ידני (ה-cron עדיין שבור)</b> · כל המספרים בלשונית "מצב המערכת" נמשכו מהמסד האמיתי</div>
+    <div class="snapshot-line">Snapshot חי מ-D1 (leadmachine-db): <b>20.08.2026, 11:05 UTC — קציר ידני + העשרת Miami-Dade</b> · כל המספרים בלשונית "מצב המערכת" נמשכו מהמסד האמיתי</div>
 
     <nav class="tabs" role="tablist" aria-label="סעיפי הדף">
       <button class="tab-btn" role="tab" aria-selected="true" aria-controls="p-status" id="t-status">מצב המערכת</button>
@@ -288,17 +288,17 @@
   <!-- ============ TAB 1: STATUS ============ -->
   <section class="panel active" id="p-status" role="tabpanel" aria-labelledby="t-status">
     <h2 class="sec">מצב המערכת — נתוני אמת מהמסד</h2>
-    <p class="sec-note">ארבעה מקורות ממשלתיים חינמיים רצים ב-Cron יומי (09:32 UTC), ואחריו Routine יומי (10:00 UTC) שמושך בעלים/מיקוד מה-Property Appraiser ומסמן absentee. דה-דופליקציה לפי כתובת; כתובות לא-שמישות מסומנות invalid ולא נמכרות. <b>19.08: ה-cron מחזיר 500 בכל הרצה מאז 15.08 23:29Z — יום רביעי ברציפות</b> — הקציר הורץ ידנית דרך ה-probe בפעם הרביעית; ארבעת המקורות תקינים, 162 שורות חדשות (Broward 91 · Orange 61 · Lee 10 · Miami-Dade 0, כי החלון כולו נטען אתמול ב-backfill). פירוט בטבלת הריצות למטה.</p>
+    <p class="sec-note">ארבעה מקורות ממשלתיים חינמיים רצים ב-Cron יומי (09:32 UTC), ואחריו Routine יומי (10:00 UTC) שמושך בעלים/מיקוד מה-Property Appraiser ומסמן absentee. דה-דופליקציה לפי כתובת; כתובות לא-שמישות מסומנות invalid ולא נמכרות. <b>20.08: ה-cron מחזיר 500 בכל הרצה מאז 15.08 23:29Z — יום חמישי ברציפות</b> — הקציר הורץ ידנית דרך ה-probe בפעם החמישית; ארבעת המקורות תקינים, 246 שורות חדשות (Miami-Dade 161 · Orange 46 · Broward 33 · Lee 6). ההעשרה החזירה בעלים ל-161 שורות חדשות ב-Miami-Dade. פירוט בטבלת הריצות למטה.</p>
 
     <div class="tiles">
       <div class="tile">
         <div class="k">לידים זמינים</div>
-        <div class="v">3,687</div>
-        <div class="s">‏מתוך 3,804 במסד · 91 invalid ב-QA · <b>26 סומנו institutional</b> (בנקים, עיריות, ועדי בית) ולא נמכרים</div>
+        <div class="v">3,924</div>
+        <div class="s">‏מתוך 4,050 במסד · 91 invalid ב-QA · <b>35 סומנו institutional</b> (בנקים, עיריות, ועדי בית, קרנות מוסדיות) ולא נמכרים</div>
       </div>
       <div class="tile">
         <div class="k">מלאי מכיר ($30)</div>
-        <div class="v">1,477</div>
+        <div class="v">1,541</div>
         <div class="s"><span class="chip acc"><span class="dot"></span>ציון 30+ עם בעלים ומיקוד, בלי עיריות/ועדי בית</span></div>
       </div>
       <div class="tile">
@@ -309,7 +309,7 @@
       <div class="tile">
         <div class="k">קונים בטבלה</div>
         <div class="v">64</div>
-        <div class="s">‏36 בפייפליין (34 prospect · 2 contacted) · <b>27 נסגרו כ-no_contact</b> אחרי מחקר · 1 פעיל · <b>3 מיילים בסך הכל בטבלה</b></div>
+        <div class="s">‏32 בפייפליין (30 prospect · 2 contacted) · <b>31 נסגרו כ-no_contact</b> אחרי מחקר · 1 פעיל · <b>4 מיילים בסך הכל בטבלה</b></div>
       </div>
     </div>
 
@@ -317,7 +317,7 @@
     <p class="sec-note">לידים חדשים שנכנסו למסד בכל יום. ב-10.08 ה-Cron רץ אך כל הרשומות היו כפילויות של ימים קודמים — אפס חדשים זה סימן שהדה-דופליקציה עובדת, לא שהמערכת נפלה. ב-12.08 נוספו שני המקורות החדשים והקציר הורץ ידנית (ה-cron החזיר 500).</p>
     <div class="viz">
       <div class="viz-head">
-        <div class="viz-title">לידים חדשים ליום · 08–19 באוגוסט</div>
+        <div class="viz-title">לידים חדשים ליום · 08–20 באוגוסט</div>
         <div class="legend">
           <span class="li"><span class="sw" style="background:var(--series-1)"></span>Lee (Cape Coral)</span>
           <span class="li"><span class="sw" style="background:var(--series-2)"></span>Miami-Dade</span>
@@ -379,14 +379,20 @@
             <div class="bar orl" style="height:10.0%" data-tip="Orange · 19.08 · 61 לידים"><span class="val">61</span></div>
             <div class="bar brw" style="height:15.0%" data-tip="Broward · 19.08 · 91 לידים"><span class="val">91</span></div>
           </div>
+          <div class="day">
+            <div class="bar lee" style="height:1.0%" data-tip="Lee · 20.08 · 6 לידים"><span class="val">6</span></div>
+            <div class="bar mdc" style="height:26.5%" data-tip="Miami-Dade · 20.08 · 161 לידים"><span class="val">161</span></div>
+            <div class="bar orl" style="height:7.6%" data-tip="Orange · 20.08 · 46 לידים"><span class="val">46</span></div>
+            <div class="bar brw" style="height:5.4%" data-tip="Broward · 20.08 · 33 לידים"><span class="val">33</span></div>
+          </div>
         </div>
-        <div class="day-labels"><span>08.08</span><span>09.08</span><span>10.08</span><span>11.08</span><span>12.08</span><span>13.08</span><span>14.08</span><span>15.08</span><span>16.08</span><span>17.08</span><span>18.08</span><span>19.08</span></div>
+        <div class="day-labels"><span>08.08</span><span>09.08</span><span>10.08</span><span>11.08</span><span>12.08</span><span>13.08</span><span>14.08</span><span>15.08</span><span>16.08</span><span>17.08</span><span>18.08</span><span>19.08</span><span>20.08</span></div>
       </div>
       <div class="viz-foot">היום הראשון (08.08) כולל את מילוי־הבסיס ההיסטורי של 30 הימים האחרונים; מכאן והלאה נכנס רק מה שחדש באמת. ב-12.08 הקפיצה היא מילוי־הבסיס של Orange ו-Broward, לא קצב יומי. ב-13.08 ה-cron חזר לעבוד אחרי תקלת ה-500 (456 לידים) — אבל Cape Coral החזיר 404. ב-14.08 Cape Coral חזר. העמודה של 18.08 היא חריגה מלאכותית: 608 מתוכה הם ה-backfill של תקרת ה-500 ב-Miami-Dade (544) ועוד 64 מהקציר הרגיל — לא קצב יומי. הקצב היומי האמיתי, אחרי מילוי-הבסיס, הוא עשרות בודדות עד ~160 ליום, ואפס בסופי שבוע — 16.08 באפס הוא נורמלי ולא תקלה.</div>
     </div>
 
     <h2 class="sec">כיסוי שדות — אחרי ההעשרה</h2>
-    <p class="sec-note">Miami-Dade על 99% בעלים+מיקוד דרך הצלבת FOLIO מול ה-Property Appraiser (נותרו 17 שורות שה-appraiser לא מחזיר עליהן בעלים). Broward מגיע מלא מהמקור. <b>Orange ירד ל-64%</b> — לא נסיגה באיכות אלא 61 שורות חדשות מ-19.08 שטרם עברו העשרת FDOR. Lee על 96%. טלפון עדיין 0% לכולם — skip tracing הוא שלב בתשלום שטרם הופעל, והוא מכפיל המחיר הבא.</p>
+    <p class="sec-note">Miami-Dade חזר ל-99% בעלים+מיקוד: ההעשרה של היום כיסתה את כל 161 השורות החדשות, ונותרו אותן 17 שורות שה-appraiser לא מחזיר עליהן בעלים. Broward מגיע מלא מהמקור. <b>Orange על 60%</b> — לא נסיגה באיכות אלא 107 שורות חדשות מ-19–20.08 שטרם עברו העשרת FDOR. Lee על 95%. טלפון עדיין 0% לכולם — skip tracing הוא שלב בתשלום שטרם הופעל, והוא מכפיל המחיר הבא.</p>
     <div class="card table-scroll">
       <table class="data">
         <thead>
@@ -395,34 +401,34 @@
         <tbody>
           <tr>
             <td><b>Lee</b> · Cape Coral</td>
-            <td class="num">963</td>
+            <td class="num">969</td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:96%"></span></span><span class="pct">96%</span></span></td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:96%"></span></span><span class="pct">96%</span></span></td>
-            <td class="num"><b>477</b> (50%)</td>
+            <td class="num"><b>477</b> (49%)</td>
             <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
           </tr>
           <tr>
             <td><b>Miami-Dade</b></td>
-            <td class="num">1,283</td>
+            <td class="num">1,435</td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:99%"></span></span><span class="pct">99%</span></span></td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:99%"></span></span><span class="pct">99%</span></span></td>
-            <td class="num"><b>519</b> (40%)</td>
+            <td class="num"><b>583</b> (41%)</td>
             <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
           </tr>
           <tr>
             <td><b>Orange</b> · Orlando</td>
-            <td class="num">822</td>
-            <td><span class="covbar"><span class="track"><span class="fill" style="width:64%"></span></span><span class="pct">64%</span></span></td>
-            <td><span class="covbar"><span class="track"><span class="fill" style="width:64%"></span></span><span class="pct">64%</span></span></td>
-            <td class="num"><b>277</b> (34%)</td>
+            <td class="num">868</td>
+            <td><span class="covbar"><span class="track"><span class="fill" style="width:60%"></span></span><span class="pct">60%</span></span></td>
+            <td><span class="covbar"><span class="track"><span class="fill" style="width:60%"></span></span><span class="pct">60%</span></span></td>
+            <td class="num"><b>277</b> (32%)</td>
             <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
           </tr>
           <tr>
             <td><b>Broward</b> · Deerfield Beach</td>
-            <td class="num">619</td>
+            <td class="num">652</td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:100%"></span></span><span class="pct">100%</span></span></td>
             <td><span class="covbar"><span class="track"><span class="fill" style="width:100%"></span></span><span class="pct">100%</span></span></td>
-            <td class="num"><b>204</b> (33%)</td>
+            <td class="num"><b>204</b> (31%)</td>
             <td><span class="covbar"><span class="track"><span class="fill none" style="width:100%"></span></span><span class="pct">0%</span></span></td>
           </tr>
         </tbody>
@@ -431,15 +437,16 @@
 
     <div style="height:14px"></div>
     <div class="warncard">
-      <p><b>האמת על האיכות, בלי ייפוי:</b> ‏(19.08) המלאי המכיר בטייר ה-$30 עומד על <b>1,477</b> — עלייה של 28 מאתמול, כולה מהקציר הידני (Broward 91 · Orange 61 · Lee 10). ה-backfill של Miami-Dade מ-18.08 (544 תיקים שנחתכו בתקרת 500 השורות) כבר בפנים והועשר. 26 שורות בבעלות בנקים/עיריות/ועדי בית סומנו institutional ולא יימכרו, ו-91 כתובות לא-שמישות סומנו invalid. absentee רץ בכל ארבעת המחוזות (Lee 477 · MDC 519 · Orange 277 · Broward 204). מה שעדיין חסר: 299 שורות ב-Orange בלי בעלים (רובן מהקצירים האחרונים שטרם הועשרו), 43 ב-Lee, 17 ב-Miami-Dade, ו-0% טלפון בכל המחוזות — skip tracing הוא שלב בתשלום שטרם הופעל. סיגנל ה-tax delinquent חסום בינתיים: רשימות החוב הרשמיות של המחוזות יושבות מאחורי חסימת Cloudflare שדורשת headless browser או דאטה ברישיון — מתועד כשדרוג הבא.</p>
+      <p><b>האמת על האיכות, בלי ייפוי:</b> ‏(20.08) המלאי המכיר בטייר ה-$30 עומד על <b>1,541</b> — עלייה של 64 מאתמול. הקציר הידני הכניס 246 שורות (Miami-Dade 161 · Orange 46 · Broward 33 · Lee 6), וההעשרה מול ה-Property Appraiser החזירה בעלים+מיקוד ל-161 מהן ב-Miami-Dade וסימנה 72 מהן absentee בציון 30. עוד 9 שורות סומנו institutional (מחלקת המים של המחוז, כנסייה, שותפות דיור בר-השגה, Home Depot, שתי קרנות SFR מוסדיות, Southern Bell) — סה"כ 35 שורות שלא יימכרו, לצד 91 כתובות invalid. absentee רץ בכל ארבעת המחוזות (MDC 583 · Lee 477 · Orange 277 · Broward 204). מה שעדיין חסר: 345 שורות ב-Orange בלי בעלים (הקצירים האחרונים, טרם הועשרו), 49 ב-Lee, 17 ב-Miami-Dade שה-appraiser לא מחזיר עליהן דבר, ו-0% טלפון בכל המחוזות — skip tracing הוא שלב בתשלום שטרם הופעל. סיגנל ה-tax delinquent חסום בינתיים: רשימות החוב הרשמיות של המחוזות יושבות מאחורי חסימת Cloudflare שדורשת headless browser או דאטה ברישיון — מתועד כשדרוג הבא.</p>
     </div>
 
     <h2 class="sec">ריצות אחרונות של ה-Harvester</h2>
-    <p class="sec-note"><b>הקציר שבור זה ארבעה ימים:</b> <code>/api/cron/harvest</code> מחזיר 500 בכל הרצה מאז 15.08 23:29Z, על פריסה שלא השתנתה מ-13.08. כלומר תקלת סביבה/הרשאות, לא באג חדש בקוד. גם <code>/api/cron/tick</code> נופל. הקוד של הפרויקט הזה יושב בריפו פרטי אחר ואינו נגיש מהסשן הזה. הקציר הורץ ידנית דרך <code>harvest-fetch</code> (ה-probe נפרס מחדש ידנית): ארבעת המקורות החזירו 200, <b>0 שורות חדשות</b> — צפוי, כי גם ה-cron רשם inserted=0 בשעות שלפני הנפילה, וסוף-שבוע לא מייצר תיקים. <b>נדרשת פעולת בעלים:</b> אבחון ה-500 בפרויקט <code>leadmachine</code>.</p>
+    <p class="sec-note"><b>הקציר שבור זה חמישה ימים:</b> <code>/api/cron/harvest</code> מחזיר 500 בכל הרצה מאז 15.08 23:29Z, על פריסה שלא השתנתה מ-13.08. כלומר תקלת סביבה/הרשאות, לא באג חדש בקוד. גם <code>/api/cron/tick</code> נופל. הקוד של הפרויקט הזה יושב בריפו פרטי אחר ואינו נגיש מהסשן הזה. הקציר הורץ ידנית דרך <code>harvest-fetch</code> (ה-probe נפרס מחדש ידנית): ארבעת המקורות החזירו 200, <b>0 שורות חדשות</b> — צפוי, כי גם ה-cron רשם inserted=0 בשעות שלפני הנפילה, וסוף-שבוע לא מייצר תיקים. <b>נדרשת פעולת בעלים:</b> אבחון ה-500 בפרויקט <code>leadmachine</code>.</p>
     <div class="card table-scroll">
       <table class="data">
         <thead><tr><th>תאריך (UTC)</th><th>מקור</th><th>נמשכו</th><th>נכנסו</th><th>כפילויות</th><th>סטטוס</th></tr></thead>
         <tbody>
+          <tr><td class="num">20.08 10:53</td><td>כל 4 המקורות (ידני)</td><td class="num">3,289</td><td class="num"><b>246</b></td><td class="num">2,153</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית · MDC 161 · Orange 46 · Broward 33 · Lee 6</span></td></tr>
           <tr><td class="num">19.08 10:30</td><td>כל 4 המקורות (ידני)</td><td class="num">3,168</td><td class="num"><b>162</b></td><td class="num">2,140</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית · Broward 91 · Orange 61 · Lee 10</span></td></tr>
           <tr><td class="num">18.08 10:45</td><td>mdc — backfill עמודים (offset 500-2000)</td><td class="num">1,615</td><td class="num"><b>544</b></td><td class="num">468</td><td><span class="chip acc"><span class="dot"></span>תיקון תקרת 500</span></td></tr>
           <tr><td class="num">18.08 10:15</td><td>כל 4 המקורות (ידני)</td><td class="num">1,452</td><td class="num"><b>124</b></td><td class="num">1,076</td><td><span class="chip acc"><span class="dot"></span>ריצה ידנית</span></td></tr>

@@ -1,120 +1,281 @@
-const STOCK_URL = "https://leadmachine-gamma.vercel.app/api/portal?action=stock";
-const DB_ID = process.env.CF_D1_DATABASE_ID || "bce5b2af-1852-4aa0-a084-ecba3d3f3933";
-const DB_ACCOUNT = process.env.CF_ACCOUNT_ID || "3472fe0b25f5c0f49a99d537cbe2cf35";
+// POST /api/chat — the concierge.
+//
+// ARCHITECTURE: intent first, state second.
+//
+// The previous version was a slot machine: whatever you typed was cast into the
+// slot the server happened to be waiting for. "hi" became a county ("We are not
+// in hi yet"), then "new york" became a volume ("Good."). The state machine was
+// the authority and the message had no say.
+//
+// Now every message goes through one classification pass that decides what the
+// message *is* and pulls out any fields it happens to contain. The state
+// machine's only remaining job is to notice which fields are still missing and
+// ask for the next one. A message is never force-cast into an awaited slot, so
+// a greeting is a greeting at any step and an out-of-coverage market is honest
+// at any step.
+//
+// The client sends back the collected fields each turn, so this stays stateless
+// (no session store) while behaving like a conversation. Client-supplied fields
+// are re-validated here; the client is never trusted as the authority.
+//
+// HOUSE VOICE: the brand speaks as "we". No personal name ever appears in
+// buyer-facing copy or escalation text.
 
-const clean = (v, max = 500) => String(v == null ? "" : v).trim().slice(0, max);
-const validEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+import {
+  clean, validEmail, isBot, stock, matchCounty, liveCountyNames,
+  coverageSentence, countyStockSentence, priceSentence,
+  deliverSample, captureOutOfCoverage, notifyTelegram,
+} from "./_funnel.js";
 
-async function d1(sql, params = []) {
-  if (!process.env.CF_API_TOKEN) throw new Error("D1 credentials not configured");
-  const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${DB_ACCOUNT}/d1/database/${DB_ID}/query`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${process.env.CF_API_TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ sql, params }),
-  });
-  const body = await r.json();
-  if (!r.ok || body.success === false) throw new Error("D1 write failed");
-  return body.result;
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001";
+
+const INTENTS = ["greeting", "location", "volume", "email", "question", "out_of_coverage", "other"];
+
+function faqPack(s) {
+  const counties = (s.counties || []).map((c) => `${c.county}: ${c.single} single-signal, ${c.cross} cross-verified, ${c.total} total`).join("; ");
+  const t = s.tiers || {};
+  return [
+    `LeadMachine sells Florida public-record property distress data to investors and wholesalers.`,
+    `LIVE COUNTIES AND STOCK (the only inventory that exists): ${counties || "temporarily unavailable"}.`,
+    t.single && t.cross ? `PRICING: single-signal $${t.single.price} per record; cross-verified $${t.cross.price} per record. No public enterprise pricing.` : "",
+    `A record contains: lead reference, owner name (where the tax roll matched), property address, city, state, ZIP, county, signals, case opened date, case age, mailing state, first seen, outcome link.`,
+    `Owner and mailing data is verified against Florida Property Appraiser tax rolls where available.`,
+    `A free 10-record sample is available. We never contact property owners; the buyer owns all outreach and its compliance.`,
+    `Teams can request a pilot at /partners. Enterprise pricing is a conversation, never published.`,
+  ].filter(Boolean).join("\n");
 }
 
-async function stock() {
-  const r = await fetch(STOCK_URL, { cache: "no-store" });
-  if (!r.ok) throw new Error("stock unavailable");
-  return r.json();
-}
+// One call: classify the intent and extract any fields present.
+async function classify(message, collected, s) {
+  if (!process.env.ANTHROPIC_API_KEY) return null;
 
-function isBot(req) {
-  const asn = clean(req.headers["x-vercel-ip-asn"] || req.headers["x-forwarded-for-asn"]);
-  const ua = clean(req.headers["user-agent"], 300).toLowerCase();
-  return Boolean(asn && /^(13335|16509|14618|8075|15169|14061|63949)$/.test(asn)) || /bot|crawler|spider|headless|curl|wget|python-requests/.test(ua);
-}
+  const system = [
+    `You are the routing layer for LeadMachine's website concierge.`,
+    `Classify the buyer's message and extract any fields it contains. Reply with STRICT JSON only, no prose and no code fences.`,
+    ``,
+    `Schema:`,
+    `{"intent":"greeting|location|volume|email|question|out_of_coverage|other","county":"<live county name or empty>","raw_location":"<place they named, or empty>","volume":"<volume they stated, or empty>","email":"<email, or empty>","answer":"<reply, only when intent is question or greeting; else empty>"}`,
+    ``,
+    `Rules:`,
+    `- "location" ONLY when they name a place we actually sell. Put the matched live county in "county".`,
+    `- "out_of_coverage" when they name any real place we do NOT sell (any other state, county, city or country). Put what they named in "raw_location". This applies at ANY point in the conversation.`,
+    `- "greeting" for hi/hello/hey/thanks and similar. Never treat a greeting as a place or a volume.`,
+    `- "volume" only for a quantity of leads. Never treat a place name as a volume.`,
+    `- "question" for anything asking about price, data, coverage, process, legality or delivery. Answer it in "answer" using ONLY the grounding pack below.`,
+    `- "other" if genuinely unclear. Leave "answer" empty.`,
+    ``,
+    `Voice for "answer": short sentences, plain and direct. Speak as "we" for the company.`,
+    `Never state a personal name. Never invent inventory, counties, prices, timelines or delivery promises.`,
+    `Only cite numbers present in the grounding pack. If asked something the pack cannot answer, set intent "other" and leave "answer" empty.`,
+    ``,
+    `GROUNDING PACK:`,
+    faqPack(s),
+    ``,
+    `Already collected (do not ask for these again): ${JSON.stringify(collected)}`,
+  ].join("\n");
 
-function stockLine(s, query) {
-  const q = clean(query).toLowerCase();
-  const hit = (s.counties || []).find((c) => c.county.toLowerCase() === q || c.county.toLowerCase().includes(q));
-  if (!hit) return q ? `We are live in ${((s.counties || []).map((c) => c.county)).join(", ")}. We are not in ${clean(query)} yet, but I can capture the demand and notify Asaf.` : `We are live in ${(s.counties || []).map((c) => `${c.county}: ${c.total} sellable`).join(" · ")}.`;
-  return `${hit.county}: ${hit.single} single-signal and ${hit.cross} cross-verified leads on the shelf right now. That is live inventory, not a promise of future stock.`;
-}
-
-function faqText(s) {
-  return `LeadMachine sells public-record distress data only. Live counties and stock: ${(s.counties || []).map((c) => `${c.county} (${c.total})`).join(", ")}. A lead includes address, county, case reference, case age, owner name where matched, mailing state, signals and score. Owner data is verified against Florida Property Appraiser tax rolls where available. We offer a free sample and do not contact property owners. We do not invent future counties or volume.`;
-}
-
-async function sendSample(email, counties, volume) {
-  // LM_API_KEY is the credential accepted by the existing harvester/export API.
-  // CHAT_ADMIN_API_KEY remains available for a future dedicated chat credential,
-  // but never masks the verified integration key during the transition.
-  const adminKey = process.env.LM_API_KEY || process.env.CHAT_ADMIN_API_KEY;
-  if (!adminKey || !process.env.AGENTMAIL_API_KEY) throw new Error("sample delivery is not configured");
-  const url = new URL("https://leadmachine-gamma.vercel.app/api/export");
-  url.searchParams.set("limit", "10");
-  if (counties) url.searchParams.set("county", counties.split(",")[0].trim());
-  const csvRes = await fetch(url, { headers: { "x-api-key": adminKey } });
-  if (!csvRes.ok) throw new Error("sample export failed");
-  const csv = await csvRes.text();
-  const mail = await fetch(`https://api.agentmail.to/v0/inboxes/${encodeURIComponent(process.env.AGENTMAIL_INBOX || "leadmachine@agentmail.to")}/messages/send`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${process.env.AGENTMAIL_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      to: [email],
-      subject: "Your LeadMachine sample is ready",
-      text: `Attached are 10 live LeadMachine records for ${counties || "Florida"}. We used your request for ${volume || "a starter batch"}. Reply if you want a county-specific shelf.`,
-      attachments: [{ content: Buffer.from(csv, "utf8").toString("base64"), filename: "leadmachine-sample.csv", content_type: "text/csv" }],
-    }),
-  });
-  if (!mail.ok) throw new Error("sample email failed");
-}
-
-async function notifyTelegram(text) {
-  if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) return;
-  await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: process.env.TELEGRAM_CHAT_ID, text }) }).catch(() => {});
-}
-
-async function llmReply(message, s) {
-  if (!process.env.ANTHROPIC_API_KEY) return { answer: faqText(s), confidence: 0.5 };
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || "claude-3-5-haiku-latest", max_tokens: 240, system: `Answer only from this grounding pack. Never invent inventory, counties, fields, pricing or delivery promises. If the question is not answerable, say ESCALATE. Grounding: ${faqText(s)} Live JSON: ${JSON.stringify(s)}`, messages: [{ role: "user", content: clean(message, 1000) }] }),
+    headers: {
+      "x-api-key": String(process.env.ANTHROPIC_API_KEY).trim(),
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 400,
+      system,
+      messages: [{ role: "user", content: clean(message, 1000) }],
+    }),
   });
-  if (!r.ok) return { answer: "I’m leaving that for Asaf — you’ll hear back today.", confidence: 0 };
+
+  if (!r.ok) {
+    // Loud, not silent. A wrong model name previously degraded every freeform
+    // answer to canned copy with nobody noticing.
+    const detail = await r.text().catch(() => "");
+    console.error(`[chat] classifier HTTP ${r.status} model=${MODEL} ${detail.slice(0, 200)}`);
+    return null;
+  }
+
   const body = await r.json();
-  const answer = body.content?.map((x) => x.text || "").join("").trim() || "I’m leaving that for Asaf — you’ll hear back today.";
-  return { answer, confidence: /ESCALATE|you.?ll hear back/i.test(answer) ? 0.2 : 0.9 };
+  const text = (body.content || []).map((x) => x.text || "").join("").trim();
+  const jsonText = text.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+  try {
+    const parsed = JSON.parse(jsonText);
+    if (!INTENTS.includes(parsed.intent)) parsed.intent = "other";
+    return parsed;
+  } catch {
+    console.error(`[chat] classifier returned non-JSON: ${text.slice(0, 200)}`);
+    return null;
+  }
+}
+
+// Deterministic fallback used when the classifier is unavailable. Deliberately
+// conservative: it recognises only what it can prove, and never guesses a slot.
+function heuristic(message, s) {
+  const m = clean(message, 300);
+  const low = m.toLowerCase();
+  const out = { intent: "other", county: "", raw_location: "", volume: "", email: "", answer: "" };
+
+  const emailMatch = m.match(/[^\s@]+@[^\s@]+\.[^\s@]{2,}/);
+  if (emailMatch) { out.intent = "email"; out.email = emailMatch[0]; return out; }
+
+  if (/^(hi|hey|hello|yo|sup|good (morning|afternoon|evening)|thanks|thank you|ok|okay)\b/.test(low)) {
+    out.intent = "greeting"; return out;
+  }
+
+  const hit = matchCounty(s, m);
+  if (hit) { out.intent = "location"; out.county = hit.county; return out; }
+
+  // A bare number, or a number with a lead/month word, is a volume.
+  if (/^\d[\d\s,\-–]*(\+|leads?|per month|\/mo|a month)?$/i.test(low)) {
+    out.intent = "volume"; out.volume = m; return out;
+  }
+  if (/\b(lead|leads|record|records)\b/.test(low) && /\d/.test(low)) {
+    out.intent = "volume"; out.volume = m; return out;
+  }
+
+  if (/\?|how much|price|pricing|cost|what is|what's|do you|can i|which/.test(low)) {
+    out.intent = "question"; return out;
+  }
+
+  // Looks like a place we do not serve: alphabetic, no digits, not a known slot.
+  if (/^[a-z][a-z\s.,'-]{2,40}$/i.test(m) && !/\d/.test(m)) {
+    out.intent = "out_of_coverage"; out.raw_location = m; return out;
+  }
+  return out;
+}
+
+const ASK_COUNTY = "Which county or ZIP do you buy in?";
+const ASK_VOLUME = "How many leads do you want to start with?";
+const ASK_EMAIL = "What work email should the 10-record sample go to?";
+
+// The state machine's entire remaining job: what is still missing?
+function nextQuestion(c) {
+  if (!c.county) return ASK_COUNTY;
+  if (!c.volume) return ASK_VOLUME;
+  if (!c.email) return ASK_EMAIL;
+  return "";
 }
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
+
+  const ip = clean(String(req.headers["x-forwarded-for"] || "").split(",")[0], 60);
+  const ua = clean(req.headers["user-agent"], 300);
+
   try {
     const s = await stock();
-    const bot = isBot(req);
-    const op = clean(body.op || "message", 30);
-    if (op === "message") {
-      const step = clean(body.step || "county", 30);
-      const message = clean(body.message, 1000);
-      if (bot) return res.json({ ok: true, bot: true, step, answer: faqText(s), stock: s });
-      if (step === "county") return res.json({ ok: true, step: "volume", answer: `${stockLine(s, message)} How many leads do you want to start with?`, stock: s });
-      if (step === "volume") return res.json({ ok: true, step: "email", answer: "Good. What work email should receive the 10-record sample?", stock: s });
-      if (step === "email") return res.json({ ok: true, step: "confirm", answer: validEmail(message) ? "I have it. Send the sample now? Reply yes to send it." : "That email does not look complete yet. Please try again.", valid: validEmail(message), stock: s });
-      if (step === "confirm" && /^y(es)?$/i.test(message)) return res.json({ ok: true, step: "submitted", answer: "Send me the email, county and volume in one message and I’ll deliver the sample.", stock: s });
-      const reply = await llmReply(message, s);
-      if (reply.confidence < 0.6) await notifyTelegram(`LeadMachine chat escalation\nQuestion: ${message}\nDraft: ${reply.answer}`);
-      return res.json({ ok: true, step, answer: reply.answer, escalated: reply.confidence < 0.6, stock: s });
+    const message = clean(body.message, 1000);
+
+    // Fields collected so far, re-validated rather than trusted.
+    const collected = {
+      county: clean(body.county, 80),
+      volume: clean(body.volume, 60),
+      email: validEmail(clean(body.email, 254)) ? clean(body.email, 254).toLowerCase() : "",
+    };
+
+    // Bots never reach the classifier, so crawlers cannot spend tokens.
+    if (isBot(req)) {
+      return res.json({ ok: true, bot: true, collected, answer: `${coverageSentence(s)} ${priceSentence(s)} Ask us for a free 10-record sample and we will send live rows from any live county.`.trim(), stock: s });
     }
-    if (op === "submit") {
-      const email = clean(body.email, 254).toLowerCase();
-      const counties = clean(body.counties, 300);
-      const volume = clean(body.volume, 60);
-      if (!validEmail(email)) return res.status(400).json({ error: "Enter a valid email." });
-      await d1(`INSERT INTO buyer_leads (email,counties,volume,source,status,created_at,updated_at) VALUES (?,?,?,?, 'new',datetime('now'),datetime('now')) ON CONFLICT(email) DO UPDATE SET counties=excluded.counties, volume=excluded.volume, source='chat', requests=requests+1, updated_at=datetime('now')`, [email, counties, volume, "chat"]);
-      await sendSample(email, counties, volume);
-      await d1(`UPDATE buyer_leads SET status='sampled', sample_sent_at=datetime('now'), notes=? WHERE email=?`, [`chat sample delivered for ${counties || "all live counties"}`, email]);
-      return res.json({ ok: true, step: "sent", answer: "Your sample is in your inbox. It contains live records from the shelf we just checked.", stock: s });
+
+    if (!message) {
+      return res.json({ ok: true, collected, answer: `${coverageSentence(s)} ${ASK_COUNTY}`, stock: s });
     }
-    return res.status(400).json({ error: "Unknown chat operation" });
+
+    // ---- intent first ----
+    const read = (await classify(message, collected, s)) || heuristic(message, s);
+
+    // Trust our own live shelf over the model for coverage decisions.
+    const namedPlace = read.county || read.raw_location || (read.intent === "location" ? message : "");
+    const hit = namedPlace ? matchCounty(s, namedPlace) : null;
+
+    // Out of coverage is honest at ANY step, and is never dropped.
+    if ((read.intent === "out_of_coverage" || (read.intent === "location" && !hit)) && namedPlace) {
+      const requested = clean(read.raw_location || namedPlace, 80);
+      if (collected.email) {
+        await captureOutOfCoverage({
+          email: collected.email, requested, volume: collected.volume,
+          source: "chat", ip, ua,
+        });
+        return res.json({
+          ok: true, covered: false, collected,
+          answer: `We are not in ${requested} yet. We will not sell you a list we cannot stand behind. You are on the list for that market and the details are in your inbox. ${coverageSentence(s)} Want a free sample from one of those?`,
+          stock: s,
+        });
+      }
+      // No email yet: ask for it so the demand can actually be logged.
+      return res.json({
+        ok: true, covered: false, awaiting: "email_for_waitlist",
+        collected: { ...collected, county: "", pending_location: requested },
+        answer: `We are not in ${requested} yet, and we will not pretend otherwise. ${coverageSentence(s)} Leave your work email and we will add you to the list for ${requested}, or point you at a live county.`,
+        stock: s,
+      });
+    }
+
+    // Merge anything the message actually contained.
+    if (hit) collected.county = hit.county;
+    if (read.volume) collected.volume = clean(read.volume, 60);
+    if (read.email && validEmail(read.email)) collected.email = clean(read.email, 254).toLowerCase();
+
+    // An email arriving while a waitlist market is pending completes that path.
+    const pendingLocation = clean(body.pending_location, 80);
+    if (pendingLocation && collected.email) {
+      await captureOutOfCoverage({
+        email: collected.email, requested: pendingLocation, volume: collected.volume,
+        source: "chat", ip, ua,
+      });
+      return res.json({
+        ok: true, covered: false, collected: { ...collected, pending_location: "" },
+        answer: `Logged. You are on the list for ${pendingLocation} and we have emailed you the details. ${coverageSentence(s)} Say the word and we will send a free sample from one of those.`,
+        stock: s,
+      });
+    }
+
+    // Everything needed is present: deliver.
+    if (collected.county && collected.volume && collected.email) {
+      await deliverSample({
+        email: collected.email, counties: collected.county, volume: collected.volume,
+        source: "chat", ip, ua,
+      });
+      return res.json({
+        ok: true, sent: true, collected,
+        answer: `Sent. Ten live ${collected.county} records are in your inbox. Reply to that email if you want a different county or a bigger batch.`,
+        stock: s,
+      });
+    }
+
+    // Otherwise: acknowledge what this message was, then ask for what is missing.
+    const missing = nextQuestion(collected);
+    let lead = "";
+
+    if (read.intent === "greeting") {
+      lead = read.answer || `Hello. ${coverageSentence(s)}`;
+    } else if (read.intent === "question") {
+      if (read.answer) {
+        lead = read.answer;
+      } else {
+        // No grounded answer available: escalate rather than improvise.
+        await notifyTelegram(`LeadMachine chat escalation\nQuestion: ${message}\nNo grounded answer was available.`);
+        lead = "That one needs a human. We have passed it on and you will hear back today.";
+      }
+    } else if (hit) {
+      lead = countyStockSentence(hit);
+    } else if (read.intent === "volume" && collected.volume) {
+      lead = `${collected.volume} it is.`;
+    } else if (read.intent === "email" && collected.email) {
+      lead = "Got the email.";
+    } else {
+      lead = coverageSentence(s);
+    }
+
+    return res.json({ ok: true, collected, answer: `${lead} ${missing}`.trim(), stock: s });
   } catch (err) {
     console.error("[chat]", err);
-    return res.status(502).json({ error: "I could not complete that request right now. Please leave your email and Asaf will follow up." });
+    return res.status(502).json({
+      error: "Something went wrong on our side. Leave your work email and we will follow up.",
+    });
   }
 }

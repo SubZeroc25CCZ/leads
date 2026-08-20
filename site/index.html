@@ -401,7 +401,7 @@
 
 <script>
 (async function(){
-  const $=id=>document.getElementById(id); let step='county', county='', volume='', email='';
+  const $=id=>document.getElementById(id);
   try{
     const r=await fetch('/api/stock',{cache:'no-store'}), s=await r.json();
     const total=(s.counties||[]).reduce((n,c)=>n+c.total,0), cross=(s.counties||[]).reduce((n,c)=>n+c.cross,0);
@@ -438,13 +438,16 @@
 
   const chat=$('chat'), log=$('chat-log'); $('chat-toggle').onclick=()=>chat.classList.add('open'); $('chat-close').onclick=()=>chat.classList.remove('open');
   function add(text,who){const d=document.createElement('div');d.className='bubble '+who;d.textContent=text;log.appendChild(d);log.scrollTop=log.scrollHeight;}
+  // The server decides intent; the client only carries the collected fields
+  // forward so the conversation stays stateless server-side.
+  let ctx={county:'',volume:'',email:'',pending_location:''};
   $('chat-form').onsubmit=async e=>{e.preventDefault();const input=$('chat-input'),msg=input.value.trim();if(!msg)return;input.value='';add(msg,'user');
     try{
-      if(step==='county'){county=msg;const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'message',step,message:msg})});const x=await r.json();add(x.answer||x.error,'bot');step='volume';}
-      else if(step==='volume'){volume=msg;const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'message',step,message:msg})});const x=await r.json();add(x.answer||x.error,'bot');step='email';}
-      else if(step==='email'){email=msg;const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'message',step,message:msg})});const x=await r.json();add(x.answer||x.error,'bot');if(x.valid)step='confirm';}
-      else if(step==='confirm'){if(/^y(es)?$/i.test(msg)){const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'submit',email,counties:county,volume})});const x=await r.json();add(x.answer||x.error,'bot');step='done';}else add('No problem. Say yes when you want me to send it.','bot');}
-      else {const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'message',step:'freeform',message:msg})});const x=await r.json();add(x.answer||x.error,'bot');}
+      const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message:msg,county:ctx.county,volume:ctx.volume,email:ctx.email,pending_location:ctx.pending_location})});
+      const x=await r.json();
+      if(x.collected){ctx={county:x.collected.county||'',volume:x.collected.volume||'',email:x.collected.email||'',pending_location:x.collected.pending_location||''};}
+      add(x.answer||x.error||'Please try that again.','bot');
     }catch(err){add('The shelf is taking a moment. Please try again.','bot');}
   };
 })();

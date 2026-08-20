@@ -180,7 +180,7 @@
   .form-card input.invalid,.form-card select.invalid{outline:2px solid #a5291b;outline-offset:-1px}
   .claim-note{margin-top:20px;font-size:14px;color:var(--gray);max-width:420px}
   .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.faq-item{border-top:1px solid var(--line);padding:18px 0}.faq-item h3{font-family:var(--mono);font-size:15px;margin-bottom:7px}.faq-item p{font-size:14px;color:var(--gray);max-width:560px}.live-note{font-family:var(--mono);font-size:11px;color:var(--gray);margin-top:12px}
-  .chat-toggle{position:fixed;right:24px;bottom:24px;z-index:40;background:var(--blue);color:#fff;border:0;padding:15px 18px;font-family:var(--mono);font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(16,17,18,.18)}.chat{position:fixed;right:24px;bottom:78px;width:min(380px,calc(100vw - 32px));background:#fff;border:1px solid var(--ink);z-index:40;box-shadow:0 18px 50px rgba(16,17,18,.18);display:none}.chat.open{display:block}.chat-head{background:var(--dark);color:#fff;padding:16px 18px;font-family:var(--mono);font-size:13px;display:flex;justify-content:space-between}.chat-close{background:none;border:0;color:#fff;font-size:18px;cursor:pointer}.chat-log{height:280px;overflow:auto;padding:14px}.bubble{max-width:88%;padding:10px 12px;margin:0 0 10px;font-size:13px;line-height:1.5}.bubble.bot{background:var(--green)}.bubble.user{margin-left:auto;background:#f2f3f5}.chat-form{display:flex;border-top:1px solid var(--line)}.chat-form input{flex:1;border:0;padding:13px;font:14px var(--body);min-width:0}.chat-form button{border:0;background:var(--blue);color:#fff;padding:0 15px;font-family:var(--mono);cursor:pointer}
+  .chat-toggle{position:fixed;right:24px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:80;background:var(--blue);color:#fff;border:0;padding:15px 18px;font-family:var(--mono);font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(16,17,18,.18)}.chat{position:fixed;right:24px;bottom:calc(78px + env(safe-area-inset-bottom));width:min(380px,calc(100vw - 32px));max-height:min(70vh,520px);background:#fff;border:1px solid var(--ink);z-index:81;box-shadow:0 18px 50px rgba(16,17,18,.18);display:none}.chat.open{display:block}.chat-head{background:var(--dark);color:#fff;padding:16px 18px;font-family:var(--mono);font-size:13px;display:flex;justify-content:space-between}.chat-close{background:none;border:0;color:#fff;font-size:18px;cursor:pointer}.chat-log{height:280px;overflow:auto;padding:14px}.bubble{max-width:88%;padding:10px 12px;margin:0 0 10px;font-size:13px;line-height:1.5}.bubble.bot{background:var(--green)}.bubble.user{margin-left:auto;background:#f2f3f5}.chat-form{display:flex;border-top:1px solid var(--line)}.chat-form input{flex:1;border:0;padding:13px;font:14px var(--body);min-width:0}.chat-form button{border:0;background:var(--blue);color:#fff;padding:0 15px;font-family:var(--mono);cursor:pointer}
   @media(max-width:1000px){.faq-grid{grid-template-columns:1fr}}
 
   footer{border-top:1px solid var(--line);padding:44px 0;font-size:12.5px;color:var(--gray)}
@@ -197,6 +197,25 @@
     .cards4{grid-template-columns:1fr 1fr}
     .price3,.split{grid-template-columns:1fr}
     .nav-links{display:none}
+  }
+  /* The concierge is a fixed overlay. Reserve room at the end of the page so it
+     can never cover the footer or the last form control on a phone. */
+  footer{padding-bottom:calc(44px + 84px)}
+  @media(max-width:430px){
+    .wrap{padding:0 18px}
+    section{padding:52px 0}
+    .hero{padding:44px 0 48px}
+    h1{font-size:clamp(34px,10vw,52px)}
+    h2{font-size:clamp(24px,7vw,34px)}
+    .stats-in{grid-template-columns:1fr}
+    .cards4{grid-template-columns:1fr}
+    .form-card{padding:24px}
+    .hero-ctas{flex-direction:column;align-items:stretch}
+    .hero-ctas .btn{justify-content:center}
+    .chat-toggle{right:14px;left:auto;bottom:calc(14px + env(safe-area-inset-bottom));padding:13px 15px;font-size:12px}
+    .chat{right:10px;left:10px;width:auto;bottom:calc(64px + env(safe-area-inset-bottom))}
+    .chat-log{height:min(46vh,260px)}
+    footer{padding-bottom:calc(44px + 76px)}
   }
 </style>
 </head>

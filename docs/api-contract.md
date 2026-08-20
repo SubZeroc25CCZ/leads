@@ -1,6 +1,6 @@
 # LeadMachine — חוזה ה-API והמערכת
 
-> קוד הפונקציות חי ב-Vercel (פרויקט leadmachine, team asafs-projects-a225bf53)
+> קוד הפונקציות חי ב-Vercel (פרויקט leadmachine בצוות Vercel הרלוונטי)
 > ולא היה שמור בגיט. מסמך זה מתעד את החוזה כפי שנצפה.
 
 ## פריסה

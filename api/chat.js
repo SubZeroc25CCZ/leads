@@ -41,7 +41,10 @@ function faqText(s) {
 }
 
 async function sendSample(email, counties, volume) {
-  const adminKey = process.env.CHAT_ADMIN_API_KEY || process.env.LM_API_KEY;
+  // LM_API_KEY is the credential accepted by the existing harvester/export API.
+  // CHAT_ADMIN_API_KEY remains available for a future dedicated chat credential,
+  // but never masks the verified integration key during the transition.
+  const adminKey = process.env.LM_API_KEY || process.env.CHAT_ADMIN_API_KEY;
   if (!adminKey || !process.env.AGENTMAIL_API_KEY) throw new Error("sample delivery is not configured");
   const url = new URL("https://leadmachine-gamma.vercel.app/api/export");
   url.searchParams.set("limit", "10");

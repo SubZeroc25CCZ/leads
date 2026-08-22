@@ -27,7 +27,7 @@ import {
   deliverSample, captureOutOfCoverage, notifyTelegram,
 } from "./_funnel.js";
 
-const MODEL = process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001";
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
 
 const INTENTS = ["greeting", "location", "volume", "email", "question", "out_of_coverage", "other"];
 
@@ -66,6 +66,8 @@ async function classify(message, collected, s) {
     ``,
     `Voice for "answer": short sentences, plain and direct. Speak as "we" for the company.`,
     `Never state a personal name. Never invent inventory, counties, prices, timelines or delivery promises.`,
+    `Known product facts you MAY state: single-signal $15/lead (score 15-24); cross-verified $30/lead (score 25-40, owner verified vs Property Appraiser); free 10-record sample, no card; delivery = CSV by email within minutes; exclusive/standing orders priced per county+volume -> point to /partners.`,
+    `Tone: sharp warm concierge; 1-2 short sentences; answer first, max one follow-up question; never sound like a form.`,
     `Only cite numbers present in the grounding pack. If asked something the pack cannot answer, set intent "other" and leave "answer" empty.`,
     ``,
     `GROUNDING PACK:`,

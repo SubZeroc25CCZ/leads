@@ -3,39 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LeadMachine FL — v4 editorial-tech</title>
-<!--
-  DESIGN SPEC v4 (for Manus) — per owner's reference (Type/Opinion)
-  =================================================================
-  Aesthetic: modern editorial-tech. White, minimal grid, generous whitespace,
-  thin lines, structured modules. Typewriter mono = the brand voice, inside a
-  very modern layout. Dynamic through floating cards + thin flowing lines +
-  dotted textures — never through decoration.
-
-  Tokens:
-    --bg      #FFFFFF
-    --ink     #101112
-    --gray    #6E747D
-    --line    #E6E8EB
-    --blue    #2946F5   electric blue — primary accent, hierarchy & energy
-    --coral   #F2695C   secondary accent — small strategic touches only
-    --green   #E8F1D6   pale green — signal tags
-    --dark    #101112   dark module cards
-
-  Type:
-    Brand/headings  "Courier Prime" 400/700 — typewriter voice, tight tracking on big sizes
-    Body            "Inter" 400/500 — 16px/1.65
-    Labels          Courier Prime 11-12px uppercase letterspaced, colored per category
-
-  Rules:
-    - Accents are strategic, never ambient: blue = actions & key data,
-      coral = tiny geometric touches, green = signal tags. Mostly page is b/w/gray.
-    - Thin 1px rules structure everything; sharp corners (2px max) — the grid IS the design.
-    - Hero: mono headline + blue full stop + blue underline bar; right side floating
-      collage: signal tag, dark trend card, county-record card, sparkline card,
-      flowing thin line SVG, dot grids, rotated side caption.
-    - BANNED (owner, permanent): amber/orange on dark navy; pretentious serif displays.
--->
+<title>LeadMachine FL — Distressed-property records, harvested daily</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -130,6 +98,12 @@
 
   /* insight-style cards = live rows */
   .cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  @media(max-width:1000px){.cards3{grid-template-columns:1fr}}
+  a.arr{text-decoration:none}
+  a.arr:hover{color:var(--blue)!important}
+  .icard{transition:border-color .15s,box-shadow .15s}
+  .icard:hover{border-color:var(--blue);box-shadow:0 2px 14px rgba(41,70,245,.10)}
   .icard{border:1px solid var(--line);display:flex;flex-direction:column}
   .icard .top{padding:22px 22px 18px;flex:1}
   .icard .label{display:block;margin-bottom:12px}
@@ -205,12 +179,12 @@
 <nav><div class="wrap nav-in">
   <a class="logo" href="/" aria-label="LeadMachine home">LEAD<span>/</span>MACHINE</a>
   <div class="nav-links">
-    <a href="#pipeline">Pipeline</a><a href="#scoring">Scoring</a><a href="#rows">Live rows</a><a href="#pricing">Pricing</a><a href="/partners">For teams</a>
+    <a href="#how">How it works</a><a href="#scoring">Scoring</a><a href="#rows">Live rows</a><a href="#pricing">Pricing</a><a href="/partners">For teams</a>
   </div>
   <a class="nav-cta" href="#claim">10 free leads</a>
 </div></nav>
 
-<header class="hero" id="pipeline"><div class="wrap hero-grid">
+<header class="hero"><div class="wrap hero-grid">
   <div>
     <h1>Fresh distress data.<br>Called first<span class="dot-b">.</span></h1>
     <div class="bar"></div>
@@ -237,7 +211,7 @@
     <div class="card trend">
       <span class="label">Trend</span>
       <div class="t">Case age over 90 days doubles contact rate.</div>
-      <span class="arr">→</span>
+      <a class="arr" href="#claim" aria-label="Get the free sample">→</a>
     </div>
 
     <div class="card rec">
@@ -290,6 +264,29 @@
   </div>
 </div></div>
 
+<section id="how"><div class="wrap">
+  <div class="sec-head">
+    <div>
+      <span class="label l-blue">How it works</span>
+      <h2>From county filing to a list you can call<span class="dot-b">.</span></h2>
+    </div>
+  </div>
+  <div class="cards3">
+    <div class="icard">
+      <div class="top"><span class="label l-blue">01 · Daily</span><div class="t">Harvest</div><div class="s">Every morning we pull fresh code-enforcement and violation filings straight from four Florida county systems. No scraping middlemen — the county record is the source.</div></div>
+      <div class="viz viz-blue"><a class="arr" href="#claim" aria-label="Get the free sample" style="color:#fff">→</a></div>
+    </div>
+    <div class="icard">
+      <div class="top"><span class="label l-gray">02 · Same run</span><div class="t">Verify &amp; score</div><div class="s">Each address is matched against the Property Appraiser: owner name, mailing address, absentee status. Every row carries a published score you can filter on.</div></div>
+      <div class="viz viz-dark"><a class="arr" href="#claim" aria-label="Get the free sample">→</a></div>
+    </div>
+    <div class="icard">
+      <div class="top"><span class="label l-green">03 · On order</span><div class="t">Deliver</div><div class="s">CSV to your inbox, filtered to your counties, ZIPs and minimum score — or straight into your CRM by webhook. Shared rows go to a maximum of 3 buyers.</div></div>
+      <div class="viz viz-green"><a class="arr" href="#claim" aria-label="Get the free sample">→</a></div>
+    </div>
+  </div>
+</div></section>
+
 <section id="rows"><div class="wrap">
   <div class="sec-head">
     <div>
@@ -301,19 +298,19 @@
   <div class="cards4">
     <div class="icard">
       <div class="top"><span class="label l-blue">Record</span><div class="t">144•• SW 164 TER, Miami-Dade</div><div class="s">Violation · absentee · owner mails from Georgia.</div></div>
-      <div class="viz viz-blue"><span class="arr" style="color:#fff">→</span><span class="score-big">40</span></div>
+      <div class="viz viz-blue"><a class="arr" href="#claim" aria-label="Get the free sample" style="color:#fff">→</a><span class="score-big">40</span></div>
     </div>
     <div class="icard">
       <div class="top"><span class="label l-gray">Record</span><div class="t">15•• Miami Gardens Dr</div><div class="s">Two open cases, 210 days running. Absentee owner.</div></div>
-      <div class="viz viz-dark"><span class="arr">→</span><span class="score-big">37</span></div>
+      <div class="viz viz-dark"><a class="arr" href="#claim" aria-label="Get the free sample">→</a><span class="score-big">37</span></div>
     </div>
     <div class="icard">
       <div class="top"><span class="label l-green">Signal</span><div class="t">Absentee stock: 1,224 rows</div><div class="s">Owners who don't live at the property — across four counties.</div></div>
-      <div class="viz viz-green"><span class="arr">→</span><span class="score-big">+10</span></div>
+      <div class="viz viz-green"><a class="arr" href="#claim" aria-label="Get the free sample">→</a><span class="score-big">+10</span></div>
     </div>
     <div class="icard">
       <div class="top"><span class="label l-gray">Trend watch</span><div class="t">Case age is the quiet signal</div><div class="s">90+ days open means the county is already applying pressure.</div></div>
-      <div class="viz viz-bw"><span class="coral-tag"></span><span class="arr" style="color:#fff">→</span></div>
+      <div class="viz viz-bw"><span class="coral-tag"></span><a class="arr" href="#claim" aria-label="Get the free sample" style="color:#fff">→</a></div>
     </div>
   </div>
 </div></section>
@@ -396,7 +393,7 @@
 
 <footer><div class="wrap">
   <p class="legal">Data is compiled from public Florida county and city records and Property Appraiser systems. We sell data only — no contact is made with any property owner by LeadMachine FL. All homeowner outreach and its compliance with the TCPA and applicable law is the buyer's responsibility.</p>
-  <p>© 2026 LEAD/MACHINE FL &nbsp;·&nbsp; <a href="/terms.html">Data licence &amp; terms</a> &nbsp;·&nbsp; leadmachine@agentmail.to</p>
+  <p>© 2026 LEAD/MACHINE FL &nbsp;·&nbsp; <a href="/terms.html">Data licence &amp; terms</a> &nbsp;·&nbsp; leadmachine@agentmail.to &nbsp;·&nbsp; <a href="https://leadmachine-gamma.vercel.app/panel">Owner panel</a></p>
 </div></footer>
 
 <script>

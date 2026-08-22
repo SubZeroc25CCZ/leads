@@ -1,6 +1,16 @@
 {
   "outputDirectory": "site",
   "rewrites": [
-    { "source": "/o/:token", "destination": "/api/o/:token" }
+    {
+      "source": "/o/:token",
+      "destination": "/api/o/:token"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/ads/fl-1.jpg",
+      "destination": "https://cdn.taboola.com/libtrc/static/thumbnails/9feec7d552cf862d7d666410570358f0.jpg",
+      "permanent": false
+    }
   ]
 }
